@@ -1,4 +1,4 @@
-import mysql from "mysql";
+import mysql2 from "mysql2";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -9,7 +9,7 @@ const DB_USER = process.env.MYSQL_USER;
 const DB_PASS = process.env.MYSQL_PASSWORD;
 const DB_NAME = process.env.MYSQL_DB_NAME;
 
-const connection = mysql.createConnection({
+const pool = mysql2.createPool({
   port: DB_PORT,
   host: DB_HOST,
   user: DB_USER,
@@ -17,9 +17,23 @@ const connection = mysql.createConnection({
   database: DB_NAME,
 });
 
-connection.connect(function (err) {
-  if (err) console.log(DB_HOST);
-  console.log(`Database connected on PORT ${DB_HOST}`);
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+
+  connection
+    .query("SELECT * FROM your_table")
+    .then((results) => {
+      console.log(results);
+    })
+    .catch((err) => {
+      console.error(err);
+    })
+    .finally(() => {
+      connection.release();
+    });
 });
 
-export default connection;
+export default pool;
