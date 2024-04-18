@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 14, 2024 at 04:44 PM
+-- Generation Time: Apr 18, 2024 at 04:22 PM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 8.1.2
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `riddley`
+-- Database: `sanber-backend-project`
 --
 
 -- --------------------------------------------------------
@@ -44,25 +44,9 @@ CREATE TABLE `answers` (
 --
 
 CREATE TABLE `attempts` (
-  `code` char(9) NOT NULL,
-  `quiz_id` bigint(20) UNSIGNED NOT NULL,
-  `status` enum('pending','started','finished') NOT NULL DEFAULT 'pending',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `participants`
---
-
-CREATE TABLE `participants` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `user_id` bigint(20) UNSIGNED NOT NULL,
-  `attempt_code` char(9) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `score` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `participant_id` bigint(20) UNSIGNED NOT NULL,
+  `score` int(10) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -105,9 +89,27 @@ CREATE TABLE `questions` (
 
 CREATE TABLE `quizzes` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `room_code` char(9) DEFAULT NULL,
   `title` varchar(255) NOT NULL,
   `description` text DEFAULT NULL,
-  `difficulty` enum('easy','medium','hard') NOT NULL DEFAULT 'easy',
+  `difficulty` enum('easy','medium','hard') NOT NULL DEFAULT 'medium',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `quiz_participants`
+--
+
+CREATE TABLE `quiz_participants` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `quiz_id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `score` int(10) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -120,7 +122,7 @@ CREATE TABLE `quizzes` (
 
 CREATE TABLE `responses` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `participant_id` bigint(20) UNSIGNED NOT NULL,
+  `attempt_id` bigint(20) UNSIGNED NOT NULL,
   `answer_id` bigint(20) UNSIGNED NOT NULL,
   `question_id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -157,12 +159,41 @@ CREATE TABLE `role_permissions` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `rooms`
+--
+
+CREATE TABLE `rooms` (
+  `code` char(9) NOT NULL,
+  `room_master` bigint(20) UNSIGNED NOT NULL,
+  `room_name` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `room_participants`
+--
+
+CREATE TABLE `room_participants` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `room_code` char(9) NOT NULL,
+  `score` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `full_name` varchar(255) NOT NULL,
+  `fullname` varchar(255) NOT NULL,
   `username` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
@@ -170,6 +201,16 @@ CREATE TABLE `users` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `fullname`, `username`, `email`, `password`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 'Andi Pratama', 'andipratama01', 'andipratama@gmail.com', 'andi12345', '2024-04-16 13:12:23', '2024-04-16 06:12:23', NULL),
+(2, 'Budi Tjahyono', 'budtjahyono02', 'budtjahyono@gmail.com', 'budi12345', '2024-04-16 13:12:23', '2024-04-16 06:12:23', NULL),
+(3, 'Caca Cantika', 'cacacantika03', 'cacacantika@gmail.com', 'caca12345', '2024-04-16 13:12:23', '2024-04-16 06:12:23', NULL),
+(4, 'Didit Diamon', 'diditdiamon04', 'diditdiamon@gmail.com', 'didit12345', '2024-04-16 13:12:23', '2024-04-16 06:12:23', NULL);
 
 -- --------------------------------------------------------
 
@@ -212,17 +253,8 @@ ALTER TABLE `answers`
 -- Indexes for table `attempts`
 --
 ALTER TABLE `attempts`
-  ADD PRIMARY KEY (`code`),
-  ADD KEY `attempts_quizzes_FK` (`quiz_id`);
-
---
--- Indexes for table `participants`
---
-ALTER TABLE `participants`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `participants_unique` (`name`),
-  ADD KEY `participants_users_FK` (`user_id`),
-  ADD KEY `participants_attempts_FK` (`attempt_code`);
+  ADD KEY `attempts_quizzes_FK` (`participant_id`);
 
 --
 -- Indexes for table `permissions`
@@ -242,16 +274,26 @@ ALTER TABLE `questions`
 -- Indexes for table `quizzes`
 --
 ALTER TABLE `quizzes`
-  ADD UNIQUE KEY `quizzes_unique` (`id`);
+  ADD UNIQUE KEY `quizzes_unique` (`id`),
+  ADD KEY `quizzes_users_FK` (`user_id`),
+  ADD KEY `quizzes_rooms_FK` (`room_code`);
+
+--
+-- Indexes for table `quiz_participants`
+--
+ALTER TABLE `quiz_participants`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `quiz_participants_unique` (`user_id`,`quiz_id`),
+  ADD KEY `quiz_participants_quizzes_FK` (`quiz_id`);
 
 --
 -- Indexes for table `responses`
 --
 ALTER TABLE `responses`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `responses_participants_FK` (`participant_id`),
-  ADD KEY `responses_questions_FK` (`question_id`),
-  ADD KEY `responses_answers_FK` (`answer_id`);
+  ADD KEY `responses_answers_FK` (`answer_id`),
+  ADD KEY `responses_attempts_FK` (`attempt_id`),
+  ADD KEY `responses_questions_FK` (`question_id`);
 
 --
 -- Indexes for table `roles`
@@ -266,6 +308,21 @@ ALTER TABLE `roles`
 ALTER TABLE `role_permissions`
   ADD KEY `role_permissions_permissions_FK` (`permission_id`),
   ADD KEY `role_permissions_roles_FK` (`role_id`);
+
+--
+-- Indexes for table `rooms`
+--
+ALTER TABLE `rooms`
+  ADD PRIMARY KEY (`code`),
+  ADD KEY `rooms_users_FK` (`room_master`);
+
+--
+-- Indexes for table `room_participants`
+--
+ALTER TABLE `room_participants`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `room_participants_unique` (`user_id`,`room_code`),
+  ADD KEY `room_participants_rooms_FK` (`room_code`);
 
 --
 -- Indexes for table `users`
@@ -300,9 +357,9 @@ ALTER TABLE `answers`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `participants`
+-- AUTO_INCREMENT for table `attempts`
 --
-ALTER TABLE `participants`
+ALTER TABLE `attempts`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -324,6 +381,12 @@ ALTER TABLE `quizzes`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `quiz_participants`
+--
+ALTER TABLE `quiz_participants`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `responses`
 --
 ALTER TABLE `responses`
@@ -336,10 +399,16 @@ ALTER TABLE `roles`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `room_participants`
+--
+ALTER TABLE `room_participants`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
@@ -355,14 +424,7 @@ ALTER TABLE `answers`
 -- Constraints for table `attempts`
 --
 ALTER TABLE `attempts`
-  ADD CONSTRAINT `attempts_quizzes_FK` FOREIGN KEY (`quiz_id`) REFERENCES `quizzes` (`id`);
-
---
--- Constraints for table `participants`
---
-ALTER TABLE `participants`
-  ADD CONSTRAINT `participants_attempts_FK` FOREIGN KEY (`attempt_code`) REFERENCES `attempts` (`code`),
-  ADD CONSTRAINT `participants_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `attempts_quizzes_FK` FOREIGN KEY (`participant_id`) REFERENCES `quizzes` (`id`);
 
 --
 -- Constraints for table `questions`
@@ -371,12 +433,26 @@ ALTER TABLE `questions`
   ADD CONSTRAINT `questions_ibfk_1` FOREIGN KEY (`quiz_id`) REFERENCES `quizzes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `quizzes`
+--
+ALTER TABLE `quizzes`
+  ADD CONSTRAINT `quizzes_rooms_FK` FOREIGN KEY (`room_code`) REFERENCES `rooms` (`code`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `quizzes_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `quiz_participants`
+--
+ALTER TABLE `quiz_participants`
+  ADD CONSTRAINT `participants_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `quiz_participants_quizzes_FK` FOREIGN KEY (`quiz_id`) REFERENCES `quizzes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `responses`
 --
 ALTER TABLE `responses`
   ADD CONSTRAINT `responses_answers_FK` FOREIGN KEY (`answer_id`) REFERENCES `answers` (`id`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `responses_participants_FK` FOREIGN KEY (`participant_id`) REFERENCES `participants` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `responses_questions_FK` FOREIGN KEY (`question_id`) REFERENCES `questions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `responses_attempts_FK` FOREIGN KEY (`attempt_id`) REFERENCES `attempts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `responses_questions_FK` FOREIGN KEY (`question_id`) REFERENCES `questions` (`id`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `role_permissions`
@@ -384,6 +460,19 @@ ALTER TABLE `responses`
 ALTER TABLE `role_permissions`
   ADD CONSTRAINT `role_permissions_permissions_FK` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `role_permissions_roles_FK` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `rooms`
+--
+ALTER TABLE `rooms`
+  ADD CONSTRAINT `rooms_users_FK` FOREIGN KEY (`room_master`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `room_participants`
+--
+ALTER TABLE `room_participants`
+  ADD CONSTRAINT `room_participants_rooms_FK` FOREIGN KEY (`room_code`) REFERENCES `rooms` (`code`),
+  ADD CONSTRAINT `room_participants_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `user_permissions`
