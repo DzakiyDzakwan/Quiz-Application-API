@@ -1,4 +1,4 @@
-import connection from "./../../config/connection.js";
+import db from "./../../config/connection.js";
 import moment from "moment";
 
 export default class User {
@@ -10,21 +10,19 @@ export default class User {
     this.password = data.password || null;
     this.created_at = data.created_at || null;
     this.updated_at = data.updated_at || null;
-    this.updated_at = data.deleted_at || null;
+    this.deleted_at = data.deleted_at || null;
+  }
+
+  updated_at() {
+    return moment().utc().format("YYYY-MM-DD HH:mm:ss");
   }
 
   static async all() {
-    let query = `SELECT * FROM users`;
+    const query = `SELECT * FROM users`;
 
     try {
-      const result = await new Promise((resolve, reject) => {
-        connection.query(query, (err, result) => {
-          if (err) reject(err);
-          resolve(result);
-        });
-      });
-
-      return result;
+      const [results, fields] = await db.query(query);
+      return results;
     } catch (error) {
       throw error;
     }
@@ -32,19 +30,25 @@ export default class User {
 
   static async find(id) {
     let query = `SELECT * FROM users WHERE id = ${id}`;
+
     try {
-      const [result] = await new Promise((resolve, reject) => {
-        connection.query(query, (err, result) => {
-          if (err) reject(err);
-          resolve(result);
-        });
-      });
+      const [results, fields] = await db.query(query);
 
-      if (!result) {
-        return { message: `Tidak dapat menemukan user dengan id: ${id}` };
-      }
+      return new User(results[0]);
+    } catch (error) {
+      throw error;
+    }
+  }
 
-      return new User(result);
+  static async where(criteria) {
+    const conditions = Object.entries(criteria).map(
+      ([column, value]) => `${column} = '${value}'`
+    );
+
+    const query = `SELECT * FROM users WHERE ${conditions.join(" AND ")}`;
+    try {
+      const [results, fields] = await db.query(query);
+      return results;
     } catch (error) {
       throw error;
     }
@@ -59,18 +63,9 @@ export default class User {
     };
 
     try {
-      let result = await new Promise((resolve, reject) => {
-        connection.query(query, payload, (err, result) => {
-          if (err) reject(err);
-          resolve(result);
-        });
-      });
+      let [result, fields] = await db.query(query, payload);
 
-      const userId = result.insertId;
-
-      const user = await this.find(userId);
-
-      return user;
+      return await this.findById(result.insertId);
     } catch (error) {
       throw error;
     }
@@ -85,23 +80,18 @@ export default class User {
       moment().utc().format("YYYY-MM-DD HH:mm:ss"),
     ];
 
+    console.log(payload);
+
     let query = `
     UPDATE users SET fullname = ?, username = ?, email = ?, password = ?, updated_at = ? WHERE id = ${this.id}
     `;
 
+    console.log(query);
+
     try {
-      let result = await new Promise((resolve, reject) => {
-        connection.query(query, values, (err, result) => {
-          if (err) reject(err);
-          resolve(result);
-        });
-      });
+      let [results, fields] = await db.query(query, payload);
 
-      const userId = this.id;
-
-      const user = await User.find(userId);
-
-      return user;
+      return await User.findById(this.id);
     } catch (error) {
       throw error;
     }
@@ -110,22 +100,16 @@ export default class User {
   async delete() {
     let query = `DELETE FROM users WHERE id = ${this.id}`;
     try {
-      let result = new Promise((resolve, reject) => {
-        connection.query(query, (err, result) => {
-          if (err) reject(err);
-          resolve(result);
-        });
-      });
+      let [results, fields] = await db.query(query);
 
-      return result;
+      return results;
     } catch (error) {
       throw error;
     }
   }
 
   async roles() {
-    try {
-      let query = `
+    let query = `
       SELECT roles.id, roles.name, roles.display_name, roles.created_at, roles.updated_at 
       FROM roles 
       JOIN user_roles
@@ -133,138 +117,230 @@ export default class User {
       WHERE user_roles.user_id = ${this.id}
       `;
 
-      let result = new Promise((resolve, reject) => {
-        connection.query(query, (err, result) => {
-          if (err) reject(err);
-          resolve(result);
-        });
-      });
+    try {
+      let [results, fields] = await db.query(query);
 
-      return result;
+      this._roles = results;
+
+      return results;
     } catch (error) {
       throw error;
     }
   }
 
-  async permissions() {
+  async attachRoles(role_ids) {
+    if (!role_ids || role_ids.length === 0) {
+      throw new Error("roles tidak boleh kosong");
+    }
+
+    const existingRoles = await this.roles();
+    const new_role_ids = role_ids.filter(
+      (role_id) => !existingRoles.some((role) => role.id === role_id)
+    );
+
+    if (new_role_ids.length === 0) {
+      return "Role sudah tersedia"; // Tidak ada role baru yang perlu ditambahkan
+    }
+
+    const values = new_role_ids.map((role_id) => [
+      this.id,
+      role_id,
+      this.updated_at,
+    ]);
+
+    const query = `INSERT INTO user_roles (user_id, role_id, updated_at) VALUES ?`;
+
     try {
-      let query = `
+      let [results, fields] = await db.query(query, [values]);
+
+      return results;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async detachRoles(role_ids) {
+    if (!role_ids || role_ids.length === 0) {
+      throw new Error("roles tidak boleh kosong");
+    }
+
+    const query = `DELETE FROM user_roles WHERE user_id = ? AND role_id IN (?)`;
+
+    try {
+      let [results, fields] = await db.query(query, [this.id, role_ids]);
+
+      await this.roles();
+
+      return results;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // async hasRoles(roles = []) {
+  //   const escapedRoles = roles.map((role) => connection.escape(role));
+
+  //   let query = `
+  //       SELECT COUNT(*)
+  //       FROM roles
+  //       JOIN user_roles
+  //       ON user_roles.role_id = roles.id
+  //       WHERE user_roles.user_id = ${this.id}
+  //       AND roles.name IN (${escapedRoles.join(",")})
+  //   `;
+
+  //   try {
+  //     let result = new Promise((resolve, reject) => {
+  //       connection.query(query, (err, result) => {
+  //         if (err) reject(err);
+  //         resolve(result);
+  //       });
+  //     });
+
+  //     if (result < 1) {
+  //       return false;
+  //     }
+
+  //     return true;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
+  async permissions() {
+    let query = `
         SELECT permissions.id, permissions.name, permissions.display_name, permissions.created_at, permissions.updated_at
         FROM permissions
         JOIN user_permissions
-        ON permissions.id = user_permissions.role_id
+        ON permissions.id = user_permissions.permission_id
         WHERE user_permissions.user_id = ${this.id}
       `;
 
-      let result = new Promise((resolve, reject) => {
-        connection.query(query, (err, result) => {
-          if (err) reject(err);
-          resolve(result);
-        });
-      });
-
-      return result;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async hasRoles(roles = []) {
-    const escapedRoles = roles.map((role) => connection.escape(role));
-
-    let query = `
-        SELECT COUNT(*)
-        FROM roles
-        JOIN user_roles
-        ON user_roles.role_id = roles.id
-        WHERE user_roles.user_id = ${this.id}
-        AND roles.name IN (${escapedRoles.join(",")})
-    `;
-
     try {
-      let result = new Promise((resolve, reject) => {
-        connection.query(query, (err, result) => {
-          if (err) reject(err);
-          resolve(result);
-        });
-      });
+      let [results, fields] = await db.query(query);
 
-      if (result < 1) {
-        return false;
-      }
+      this._permissions = results;
 
-      return true;
+      return results;
     } catch (error) {
       throw error;
     }
   }
 
-  async hasPermissions(permissions = []) {
-    const escapedPermissions = permissions.map((permission) =>
-      connection.escape(permission)
+  async attachPermissions(permission_ids) {
+    if (!permission_ids || permission_ids.length === 0) {
+      throw new Error("permission tidak boleh kosong");
+    }
+
+    const existingPermissions = await this.permissions();
+    const new_permission_ids = permission_ids.filter(
+      (permission_id) =>
+        !existingPermissions.some(
+          (permission) => permission.id === permission_id
+        )
     );
 
-    let query = `
-        SELECT COUNT(*)
-        FROM permissons
-        JOIN user_permissons
-        ON user_permissons.permission_id = permissons.id
-        WHERE user_permissons.user_id = ${this.id}
-        AND permissons.name IN (${escapedPermissions.join(",")})
-    `;
+    if (new_permission_ids.length === 0) {
+      return; // Tidak ada permission baru yang perlu ditambahkan
+    }
+
+    const values = new_permission_ids.map((permission_id) => [
+      this.id,
+      permission_id,
+      this.updated_at,
+    ]);
+    const query = `INSERT INTO user_permissions (user_id, permission_id, updated_at) VALUES ?`;
 
     try {
-      let result = new Promise((resolve, reject) => {
-        connection.query(query, (err, result) => {
-          if (err) reject(err);
-          resolve(result);
-        });
-      });
+      let [results, fields] = await db.query(query, [values]);
 
-      if (result < 1) {
-        return false;
-      }
-
-      return true;
+      return results;
     } catch (error) {
       throw error;
     }
   }
 
-  async attempts() {
-    let query = `
-    SELECT participants.attempt_code as code,  partcipants.name, participants.score, attempts.status, quizzes.title, quizzes.description, quizzes.difficulty
-    FROM participants
-    JOIN attempts
-    ON attempts.code = participants.attempt_code
-    JOIN quizzes
-    ON quizzes.id = attempts.quiz_id
-    WHERE participants.user_id = ${this.id}
-    `;
+  async detachPermissions(permission_ids) {
+    if (!permission_ids || permission_ids.length === 0) {
+      throw new Error("Permission cannot be empty");
+    }
+
+    const query = `DELETE FROM user_permissions WHERE user_id = ? AND permission_id IN (?)`;
 
     try {
-      let result = connection.query(query, (err, result) => {
-        if (err) reject(err);
-        return result;
-      });
+      let [results, fields] = await db.query(query, [this.id, permission_ids]);
+
+      return results;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // async hasPermissions(permissions = []) {
+  //   const escapedPermissions = permissions.map((permission) =>
+  //     connection.escape(permission)
+  //   );
+
+  //   let query = `
+  //       SELECT COUNT(*)
+  //       FROM permissons
+  //       JOIN user_permissons
+  //       ON user_permissons.permission_id = permissons.id
+  //       WHERE user_permissons.user_id = ${this.id}
+  //       AND permissons.name IN (${escapedPermissions.join(",")})
+  //   `;
+
+  //   try {
+  //     let result = new Promise((resolve, reject) => {
+  //       connection.query(query, (err, result) => {
+  //         if (err) reject(err);
+  //         resolve(result);
+  //       });
+  //     });
+
+  //     if (result < 1) {
+  //       return false;
+  //     }
+
+  //     return true;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
+  async rooms() {
+    try {
+      let query = `
+      SELECT * FROM rooms
+      JOIN users ON users.id = rooms.room_master
+      WHERE users.id = ${this.id}
+      `;
+
+      let [results, fields] = await db.query(query);
+
+      this._rooms = results;
+
+      return results;
     } catch (error) {
       throw error;
     }
   }
 
   async quizzes() {
-    let query = `
-    SELECT * FROM quizzes
-    JOIN users
-    ON users.id = quizzes.room_master
-    WHERE quizzes.room_master = ${this.id}
-    `;
-
     try {
-      let result = connection.query(query, (err, result) => {
-        if (err) reject(err);
-        return result;
-      });
+      let query = `
+      SELECT quizzes.id, quizzes.title, quizzes.description, quizzes.difficulty, quizzes.created_at, quizzes.updated_at, rooms.*
+      FROM quizzes
+      INNER JOIN users ON users.id = quizzes.user_id
+      INNER JOIN rooms ON quizzes.room_code = rooms.code
+      WHERE users.id = ${this.id}
+      `;
+
+      let [results, fields] = await db.query(query);
+
+      this._quizzes = results;
+
+      return results;
     } catch (error) {
       throw error;
     }
