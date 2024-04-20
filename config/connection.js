@@ -1,4 +1,4 @@
-import mysql2 from "mysql2";
+import mysql2 from "mysql2/promise";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -13,27 +13,11 @@ const pool = mysql2.createPool({
   port: DB_PORT,
   host: DB_HOST,
   user: DB_USER,
-  password: DB_PASS,
   database: DB_NAME,
-});
-
-pool.getConnection((err, connection) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
-
-  connection
-    .query("SELECT * FROM your_table")
-    .then((results) => {
-      console.log(results);
-    })
-    .catch((err) => {
-      console.error(err);
-    })
-    .finally(() => {
-      connection.release();
-    });
+  password: DB_PASS,
+  waitForConnections: true,
+  maxIdle: 10,
+  idleTimeout: 60000,
 });
 
 export default pool;
