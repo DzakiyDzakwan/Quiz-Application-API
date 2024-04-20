@@ -1,4 +1,4 @@
-import connection from "./../../config/connection.js";
+import db from "./../../config/connection.js";
 import moment from "moment";
 
 export default class Role {
@@ -10,18 +10,16 @@ export default class Role {
     this.updated_at = data.updated_at || null;
   }
 
+  now() {
+    return moment().utc().format("YYYY-MM-DD HH:mm:ss");
+  }
+
   static async all() {
-    let query = `SELECT * FROM roles`;
+    const query = `SELECT * FROM roles`;
 
     try {
-      const result = await new Promise((resolve, reject) => {
-        connection.query(query, (err, result) => {
-          if (err) reject(err);
-          resolve(result);
-        });
-      });
-
-      return result;
+      const [results, fields] = await db.query(query);
+      return results;
     } catch (error) {
       throw error;
     }
@@ -29,19 +27,25 @@ export default class Role {
 
   static async find(id) {
     let query = `SELECT * FROM roles WHERE id = ${id}`;
+
     try {
-      const [result] = await new Promise((resolve, reject) => {
-        connection.query(query, (err, result) => {
-          if (err) reject(err);
-          resolve(result);
-        });
-      });
+      const [results, fields] = await db.query(query);
 
-      if (!result) {
-        return { message: `Tidak dapat menemukan role dengan id: ${id}` };
-      }
+      return new Role(results[0]);
+    } catch (error) {
+      throw error;
+    }
+  }
 
-      return new Role(result);
+  static async where(criteria) {
+    const conditions = Object.entries(criteria).map(
+      ([column, value]) => `${column} = '${value}'`
+    );
+
+    const query = `SELECT * FROM roles WHERE ${conditions.join(" AND ")}`;
+    try {
+      const [results, fields] = await db.query(query);
+      return results;
     } catch (error) {
       throw error;
     }
@@ -52,22 +56,13 @@ export default class Role {
 
     let payload = {
       ...data,
-      updated_at: moment().utc().format("YYYY-MM-DD HH:mm:ss"),
+      updated_at: this.now(),
     };
 
     try {
-      let result = await new Promise((resolve, reject) => {
-        connection.query(query, payload, (err, result) => {
-          if (err) reject(err);
-          resolve(result);
-        });
-      });
+      let [result, fields] = await db.query(query, payload);
 
-      const role_id = result.insertId;
-
-      const role = await this.find(role_id);
-
-      return role;
+      return await this.find(result.insertId);
     } catch (error) {
       throw error;
     }
@@ -75,28 +70,19 @@ export default class Role {
 
   async update(data) {
     let payload = [
-      data.name || this.name,
-      data.display_name || this.display_name,
-      moment().utc().format("YYYY-MM-DD HH:mm:ss"),
+      data.name || this.fullname,
+      data.display_name || this.username,
+      this.now(),
     ];
 
     let query = `
-    UPDATE roless SET name = ?, display_name = ?, updated_at = ? WHERE id = ${this.id}
+    UPDATE roles SET name = ?, display_name = ?, updated_at = ? WHERE id = ${this.id}
     `;
 
     try {
-      let result = await new Promise((resolve, reject) => {
-        connection.query(query, values, (err, result) => {
-          if (err) reject(err);
-          resolve(result);
-        });
-      });
+      let [results, fields] = await db.query(query, payload);
 
-      const role_id = this.id;
-
-      const role = await Role.find(role_id);
-
-      return role;
+      return await Role.find(this.id);
     } catch (error) {
       throw error;
     }
@@ -105,94 +91,132 @@ export default class Role {
   async delete() {
     let query = `DELETE FROM roles WHERE id = ${this.id}`;
     try {
-      let result = new Promise((resolve, reject) => {
-        connection.query(query, (err, result) => {
-          if (err) reject(err);
-          resolve(result);
-        });
-      });
+      let [results, fields] = await db.query(query);
 
-      return result;
+      return results;
     } catch (error) {
       throw error;
     }
   }
 
   async users() {
-    try {
-      let query = `
+    let query = `
       SELECT users.id, users.fullname, roles.display_name, roles.created_at, roles.updated_at 
       FROM users
       JOIN user_roles
       ON users.id = user_roles.user_id
+      JOIN roles
+      ON roles.id = user_roles.role_id
       WHERE user_roles.role_id = ${this.id}
       `;
 
-      let result = new Promise((resolve, reject) => {
-        connection.query(query, (err, result) => {
-          if (err) reject(err);
-          resolve(result);
-        });
-      });
+    try {
+      let [results, fields] = await db.query(query);
 
-      return result;
+      this._users = results;
+      return results;
     } catch (error) {
       throw error;
     }
   }
 
   async permissions() {
-    try {
-      let query = `
+    let query = `
         SELECT permissions.id, permissions.name, permissions.display_name, permissions.created_at, permissions.updated_at
         FROM permissions
         JOIN role_permissions
         ON permissions.id = role_permissions.role_id
         WHERE role_permissions.role_id = ${this.id}
       `;
+    try {
+      let [results, fields] = await db.query(query);
 
-      let result = new Promise((resolve, reject) => {
-        connection.query(query, (err, result) => {
-          if (err) reject(err);
-          resolve(result);
-        });
-      });
+      this._permissions = results;
 
-      return result;
+      return results;
     } catch (error) {
       throw error;
     }
   }
 
-  async hasPermissions(permissions = []) {
-    const escapedPermissions = permissions.map((permission) =>
-      connection.escape(permission)
+  async attachPermissions(permission_ids) {
+    if (!permission_ids || permission_ids.length === 0) {
+      throw new Error("permission tidak boleh kosong");
+    }
+
+    const existingPermissions = await this.permissions();
+    const new_permission_ids = permission_ids.filter(
+      (permission_id) =>
+        !existingPermissions.some(
+          (permission) => permission.id === permission_id
+        )
     );
 
-    let query = `
-        SELECT COUNT(*)
-        FROM permissons
-        JOIN role_permissons
-        ON role_permissons.permission_id = permissons.id
-        WHERE role_permissons.role_id = ${this.id}
-        AND permissons.name IN (${escapedPermissions.join(",")})
-    `;
+    if (new_permission_ids.length === 0) {
+      return; // Tidak ada permission baru yang perlu ditambahkan
+    }
+
+    const values = new_permission_ids.map((permission_id) => [
+      this.id,
+      permission_id,
+      this.updated_at,
+    ]);
+    const query = `INSERT INTO role_permissions (role_id, permission_id, updated_at) VALUES ?`;
 
     try {
-      let result = new Promise((resolve, reject) => {
-        connection.query(query, (err, result) => {
-          if (err) reject(err);
-          resolve(result);
-        });
-      });
+      let [results, fields] = await db.query(query, [values]);
 
-      if (result < 1) {
-        return false;
-      }
-
-      return true;
+      return results;
     } catch (error) {
       throw error;
     }
   }
+
+  async detachPermissions(permission_ids) {
+    if (!permission_ids || permission_ids.length === 0) {
+      throw new Error("permission tidak boleh kosong");
+    }
+
+    const query = `DELETE FROM role_permissions WHERE role_id = ? AND permission_id IN (?)`;
+
+    try {
+      let [results, fields] = await db.query(query, [this.id, permission_ids]);
+
+      return results;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // async hasPermissions(permissions = []) {
+  //   const escapedPermissions = permissions.map((permission) =>
+  //     connection.escape(permission)
+  //   );
+
+  //   let query = `
+  //       SELECT COUNT(*)
+  //       FROM permissons
+  //       JOIN role_permissons
+  //       ON role_permissons.permission_id = permissons.id
+  //       WHERE role_permissons.role_id = ${this.id}
+  //       AND permissons.name IN (${escapedPermissions.join(",")})
+  //   `;
+
+  //   try {
+  //     let result = new Promise((resolve, reject) => {
+  //       connection.query(query, (err, result) => {
+  //         if (err) reject(err);
+  //         resolve(result);
+  //       });
+  //     });
+
+  //     if (result < 1) {
+  //       return false;
+  //     }
+
+  //     return true;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 }
