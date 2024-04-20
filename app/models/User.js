@@ -13,7 +13,7 @@ export default class User {
     this.deleted_at = data.deleted_at || null;
   }
 
-  updated_at() {
+  now() {
     return moment().utc().format("YYYY-MM-DD HH:mm:ss");
   }
 
@@ -59,13 +59,13 @@ export default class User {
 
     let payload = {
       ...data,
-      updated_at: moment().utc().format("YYYY-MM-DD HH:mm:ss"),
+      updated_at: this.now(),
     };
 
     try {
       let [result, fields] = await db.query(query, payload);
 
-      return await this.findById(result.insertId);
+      return await this.find(result.insertId);
     } catch (error) {
       throw error;
     }
@@ -77,7 +77,7 @@ export default class User {
       data.username || this.username,
       data.email || this.email,
       data.password || this.password,
-      moment().utc().format("YYYY-MM-DD HH:mm:ss"),
+      this.now(),
     ];
 
     console.log(payload);
@@ -91,7 +91,7 @@ export default class User {
     try {
       let [results, fields] = await db.query(query, payload);
 
-      return await User.findById(this.id);
+      return await User.find(this.id);
     } catch (error) {
       throw error;
     }

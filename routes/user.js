@@ -15,7 +15,7 @@ router.get("/:id/roles", UserController.roles);
 router.post("/:id/attach-roles", UserController.attachRole);
 router.delete("/:id/detach-roles", UserController.detachRole);
 
-router.post("/:id/permissions", UserController.permissions);
+router.get("/:id/permissions", UserController.permissions);
 router.post("/:id/attach-permissions", UserController.attachPermission);
 router.post("/:id/detach-permissions", UserController.detachPermission);
 
