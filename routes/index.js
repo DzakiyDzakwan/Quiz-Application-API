@@ -1,5 +1,6 @@
 import { Router } from "express";
 import UserRoute from "./user.js";
+import RoleRoute from "./role.js";
 
 const router = Router();
 
@@ -8,5 +9,6 @@ router.get("/", (req, res) => {
 });
 
 router.use("/user", UserRoute);
+router.use("/role", RoleRoute);
 
 export default router;
