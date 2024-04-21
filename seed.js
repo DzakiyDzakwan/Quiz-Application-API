@@ -1,10 +1,12 @@
-import UserSeeder from "./databases/seeders/UserSeeder.js";
+import db from "./config/connection.js";
+
 import RoleSeeder from "./databases/seeders/RoleSeeder.js";
+import UserSeeder from "./databases/seeders/UserSeeder.js";
 
 const seed = async () => {
   try {
-    await UserSeeder.run();
     await RoleSeeder.run();
+    await UserSeeder.run();
     console.log("Seeding complete. Exiting process...");
     process.exit(0); // Exit with success code
   } catch (error) {

@@ -10,16 +10,17 @@ export default class Role {
     this.updated_at = data.updated_at || null;
   }
 
-  now() {
-    return moment().utc().format("YYYY-MM-DD HH:mm:ss");
-  }
-
   static async all() {
     const query = `SELECT * FROM roles`;
 
     try {
       const [results, fields] = await db.query(query);
-      return results;
+
+      let roles = results.map((result) => {
+        return new Role(result);
+      });
+
+      return roles;
     } catch (error) {
       throw error;
     }
@@ -45,7 +46,12 @@ export default class Role {
     const query = `SELECT * FROM roles WHERE ${conditions.join(" AND ")}`;
     try {
       const [results, fields] = await db.query(query);
-      return results;
+
+      let roles = results.map((result) => {
+        return new Role(result);
+      });
+
+      return roles;
     } catch (error) {
       throw error;
     }
@@ -56,7 +62,7 @@ export default class Role {
 
     let payload = {
       ...data,
-      updated_at: this.now(),
+      updated_at: moment().utc().format("YYYY-MM-DD HH:mm:ss"),
     };
 
     try {
@@ -72,7 +78,7 @@ export default class Role {
     let payload = [
       data.name || this.fullname,
       data.display_name || this.username,
-      this.now(),
+      moment().utc().format("YYYY-MM-DD HH:mm:ss"),
     ];
 
     let query = `

@@ -13,16 +13,17 @@ export default class User {
     this.deleted_at = data.deleted_at || null;
   }
 
-  now() {
-    return moment().utc().format("YYYY-MM-DD HH:mm:ss");
-  }
-
   static async all() {
     const query = `SELECT * FROM users`;
 
     try {
       const [results, fields] = await db.query(query);
-      return results;
+
+      let users = results.map((result) => {
+        return new User(result);
+      });
+
+      return users;
     } catch (error) {
       throw error;
     }
@@ -48,7 +49,12 @@ export default class User {
     const query = `SELECT * FROM users WHERE ${conditions.join(" AND ")}`;
     try {
       const [results, fields] = await db.query(query);
-      return results;
+
+      let users = results.map((result) => {
+        return new User(result);
+      });
+
+      return users;
     } catch (error) {
       throw error;
     }
@@ -59,7 +65,7 @@ export default class User {
 
     let payload = {
       ...data,
-      updated_at: this.now(),
+      updated_at: moment().utc().format("YYYY-MM-DD HH:mm:ss"),
     };
 
     try {
@@ -77,7 +83,7 @@ export default class User {
       data.username || this.username,
       data.email || this.email,
       data.password || this.password,
-      this.now(),
+      moment().utc().format("YYYY-MM-DD HH:mm:ss"),
     ];
 
     console.log(payload);
