@@ -18,7 +18,7 @@ export default class PermissionController {
       let data = await Permission.find(id);
 
       await data.users();
-      await data.permissions();
+      await data.roles();
 
       res.status(200).send(data);
     } catch (error) {
@@ -66,7 +66,7 @@ export default class PermissionController {
     }
   }
 
-  static async users() {
+  static async users(req, res) {
     try {
       let id = parseInt(req.params.id);
       let permission = await Permission.find(id);
@@ -85,7 +85,7 @@ export default class PermissionController {
     try {
       let permission = await Permission.find(id);
 
-      let data = permission.roles();
+      let data = await permission.roles();
 
       res.status(200).send(data);
     } catch (error) {

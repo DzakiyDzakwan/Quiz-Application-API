@@ -224,7 +224,6 @@ export default class User {
 
     try {
       let [results, fields] = await db.query(query);
-
       this._permissions = results;
 
       return results;

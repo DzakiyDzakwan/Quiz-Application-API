@@ -66,7 +66,7 @@ export default class RoleController {
     }
   }
 
-  static async users() {
+  static async users(req, res) {
     try {
       let id = parseInt(req.params.id);
       let role = await Role.find(id);
@@ -85,7 +85,7 @@ export default class RoleController {
     try {
       let role = await Role.find(id);
 
-      let data = role.permissions();
+      let data = await role.permissions();
 
       res.status(200).send(data);
     } catch (error) {
@@ -99,7 +99,8 @@ export default class RoleController {
     try {
       let role = await Role.find(id);
 
-      let data = role.attachPermissions(req.body);
+      let data = role.attachPermissions(req.body.permissions);
+
       res.status(200).send({ message: "attach permissions success" });
     } catch (error) {
       console.log(error);
@@ -112,21 +113,8 @@ export default class RoleController {
     try {
       let role = await Role.find(id);
 
-      let data = role.detachPermissions(req.body);
+      let data = role.detachPermissions(req.body.permissions);
       res.status(200).send({ message: "detach permissions success" });
-    } catch (error) {
-      console.log(error);
-      res.status(400).send(error);
-    }
-  }
-
-  static async test(req, res) {
-    try {
-      let result = await Role.find({
-        name: "super",
-      });
-
-      res.status(200).send(result);
     } catch (error) {
       console.log(error);
       res.status(400).send(error);

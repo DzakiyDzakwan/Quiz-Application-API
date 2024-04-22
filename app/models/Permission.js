@@ -78,7 +78,7 @@ export default class Permission {
     try {
       let [results, fields] = await db.query(query, payload);
 
-      return await Role.find(this.id);
+      return await Permission.find(this.id);
     } catch (error) {
       throw error;
     }
@@ -127,7 +127,7 @@ export default class Permission {
     try {
       let [results, fields] = await db.query(query);
 
-      this._permissions = results;
+      this._roles = results;
 
       return results;
     } catch (error) {

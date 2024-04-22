@@ -116,7 +116,7 @@ export default class UserController {
     try {
       let user = await User.find(id);
 
-      let data = user.permissions();
+      let data = await user.permissions();
 
       res.status(200).send(data);
     } catch (error) {
@@ -130,7 +130,8 @@ export default class UserController {
     try {
       let user = await User.find(id);
 
-      let data = user.attachPermissions(req.body);
+      let data = user.attachPermissions(req.body.permissions);
+
       res.status(200).send({ message: "attach permissions success" });
     } catch (error) {
       console.log(error);
@@ -143,7 +144,8 @@ export default class UserController {
     try {
       let user = await User.find(id);
 
-      let data = user.detachPermissions(req.body);
+      let data = user.detachPermissions(req.body.permissions);
+
       res.status(200).send({ message: "detach permissions success" });
     } catch (error) {
       console.log(error);
@@ -173,19 +175,6 @@ export default class UserController {
       let data = await user.quizzes();
 
       res.status(200).send(data);
-    } catch (error) {
-      console.log(error);
-      res.status(400).send(error);
-    }
-  }
-
-  static async test(req, res) {
-    try {
-      let result = await User.find({
-        username: "andibudiawan01",
-      });
-
-      res.status(200).send(result);
     } catch (error) {
       console.log(error);
       res.status(400).send(error);

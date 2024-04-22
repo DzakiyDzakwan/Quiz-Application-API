@@ -128,10 +128,10 @@ export default class Role {
 
   async permissions() {
     let query = `
-        SELECT permissions.id, permissions.name, permissions.display_name, permissions.created_at, permissions.updated_at
+        SELECT *
         FROM permissions
-        JOIN role_permissions
-        ON permissions.id = role_permissions.role_id
+        INNER JOIN role_permissions
+        ON permissions.id = role_permissions.permission_id
         WHERE role_permissions.role_id = ${this.id}
       `;
     try {
@@ -151,6 +151,7 @@ export default class Role {
     }
 
     const existingPermissions = await this.permissions();
+
     const new_permission_ids = permission_ids.filter(
       (permission_id) =>
         !existingPermissions.some(
@@ -159,15 +160,16 @@ export default class Role {
     );
 
     if (new_permission_ids.length === 0) {
-      return; // Tidak ada permission baru yang perlu ditambahkan
+      return;
     }
 
     const values = new_permission_ids.map((permission_id) => [
-      this.id,
       permission_id,
+      this.id,
       this.updated_at,
     ]);
-    const query = `INSERT INTO role_permissions (role_id, permission_id, updated_at) VALUES ?`;
+
+    const query = `INSERT INTO role_permissions (permission_id, role_id, updated_at) VALUES ?`;
 
     try {
       let [results, fields] = await db.query(query, [values]);
