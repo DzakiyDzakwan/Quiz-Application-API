@@ -32,7 +32,11 @@ export default class Role {
     try {
       const [results, fields] = await db.query(query);
 
-      return new Role(results[0]);
+      if (results[0]) {
+        return new Role(results[0]);
+      }
+
+      return results[0];
     } catch (error) {
       throw error;
     }
@@ -44,6 +48,7 @@ export default class Role {
     );
 
     const query = `SELECT * FROM roles WHERE ${conditions.join(" AND ")}`;
+
     try {
       const [results, fields] = await db.query(query);
 

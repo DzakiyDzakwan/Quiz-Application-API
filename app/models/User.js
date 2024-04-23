@@ -35,7 +35,11 @@ export default class User {
     try {
       const [results, fields] = await db.query(query);
 
-      return new User(results[0]);
+      if (results[0]) {
+        return new User(results[0]);
+      }
+
+      return results[0];
     } catch (error) {
       throw error;
     }
@@ -71,7 +75,7 @@ export default class User {
     try {
       let [result, fields] = await db.query(query, payload);
 
-      return await this.find(result.insertId);
+      return await User.find(result.insertId);
     } catch (error) {
       throw error;
     }
@@ -86,13 +90,9 @@ export default class User {
       moment().utc().format("YYYY-MM-DD HH:mm:ss"),
     ];
 
-    console.log(payload);
-
     let query = `
     UPDATE users SET fullname = ?, username = ?, email = ?, password = ?, updated_at = ? WHERE id = ${this.id}
     `;
-
-    console.log(query);
 
     try {
       let [results, fields] = await db.query(query, payload);

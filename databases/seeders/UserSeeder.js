@@ -1,9 +1,12 @@
 import User from "./../../app/models/User.js";
 import Role from "../../app/models/Role.js";
 import Permission from "../../app/models/Permission.js";
+import bcrypt from "bcrypt";
 
 export default class UserSeeder {
   static async run() {
+    console.log(`Seeding UserSeeder`);
+
     let users = [
       {
         fullname: "Andi Pratama",
@@ -45,36 +48,42 @@ export default class UserSeeder {
           fullname: user.fullname,
           username: user.username,
           email: user.email,
-          password: user.password,
+          password: await bcrypt.hash(user.password, 8),
         };
 
-        let new_user = await User.where(data);
+        let new_user = await User.where({
+          username: user.username,
+          email: user.email,
+        });
 
         if (!new_user[0]) {
           new_user = await User.create(data);
         } else {
           new_user = new_user[0];
+          new_user = await new_user.update(data);
         }
 
         for (const role of user.roles) {
-          let r = await Role.where(role);
+          let r = await Role.where({ name: role.name });
 
           if (!r[0]) {
             r = await Role.create(role);
           } else {
             r = r[0];
+            r = await r.update(role);
           }
 
           new_user.attachRoles([r.id]);
         }
 
         for (const permission of user.permissions) {
-          let p = await permission.where(permission);
+          let p = await Permission.where({ name: permission.name });
 
           if (!p[0]) {
-            p = await permission.create(permission);
+            p = await Permission.create(permission);
           } else {
             p = p[0];
+            p = await p.update(p);
           }
 
           new_user.attachPermissions([p.id]);
