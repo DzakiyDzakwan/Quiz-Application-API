@@ -5,10 +5,10 @@ export default class RoleController {
     try {
       let data = await Role.all();
 
-      res.status(200).send(data);
+      return res.status(200).send(data);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -20,10 +20,10 @@ export default class RoleController {
       await data.users();
       await data.permissions();
 
-      res.status(200).send(data);
+      return res.status(200).send(data);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -31,10 +31,10 @@ export default class RoleController {
     try {
       let data = await Role.create(req.body);
 
-      res.status(201).send({ message: "create success", data });
+      return res.status(201).send({ message: "create success", data });
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -45,10 +45,10 @@ export default class RoleController {
 
       let data = await role.update(req.body);
 
-      res.status(201).send({ message: "update success", data });
+      return res.status(201).send({ message: "update success", data });
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -59,10 +59,10 @@ export default class RoleController {
 
       let data = await role.delete();
 
-      res.status(200).send({ message: "delete success" });
+      return res.status(200).send({ message: "delete success" });
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -73,10 +73,10 @@ export default class RoleController {
 
       let data = await role.users();
 
-      res.status(200).send(data);
+      return res.status(200).send(data);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -87,10 +87,10 @@ export default class RoleController {
 
       let data = await role.permissions();
 
-      res.status(200).send(data);
+      return res.status(200).send(data);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -101,10 +101,10 @@ export default class RoleController {
 
       let data = role.attachPermissions(req.body.permissions);
 
-      res.status(200).send({ message: "attach permissions success" });
+      return res.status(200).send({ message: "attach permissions success" });
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -114,10 +114,10 @@ export default class RoleController {
       let role = await Role.find(id);
 
       let data = role.detachPermissions(req.body.permissions);
-      res.status(200).send({ message: "detach permissions success" });
+      return res.status(200).send({ message: "detach permissions success" });
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 }

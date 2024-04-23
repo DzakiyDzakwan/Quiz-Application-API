@@ -5,10 +5,10 @@ export default class UserController {
     try {
       let data = await User.all();
 
-      res.status(200).send(data);
+      return res.status(200).send(data);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -22,10 +22,10 @@ export default class UserController {
       await data.rooms();
       await data.quizzes();
 
-      res.status(200).send(data);
+      return res.status(200).send(data);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -33,10 +33,10 @@ export default class UserController {
     try {
       let data = await User.create(req.body);
 
-      res.status(201).send({ message: "create success", data });
+      return res.status(201).send({ message: "create success", data });
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -47,10 +47,10 @@ export default class UserController {
 
       let data = await user.update(req.body);
 
-      res.status(201).send({ message: "update success", data });
+      return res.status(201).send({ message: "update success", data });
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -61,10 +61,10 @@ export default class UserController {
 
       let data = await user.delete();
 
-      res.status(200).send({ message: "delete success" });
+      return res.status(200).send({ message: "delete success" });
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -75,10 +75,10 @@ export default class UserController {
 
       let data = await user.roles();
 
-      res.status(200).send(data);
+      return res.status(200).send(data);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -89,10 +89,10 @@ export default class UserController {
 
       let data = await user.attachRoles(req.body.roles);
       console.log(user);
-      res.status(200).send({ message: "attach roles success", data });
+      return res.status(200).send({ message: "attach roles success", data });
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -104,10 +104,10 @@ export default class UserController {
       let data = await user.detachRoles(req.body.roles);
 
       console.log(user);
-      res.status(200).send({ message: "detach roles success" });
+      return res.status(200).send({ message: "detach roles success" });
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -118,10 +118,10 @@ export default class UserController {
 
       let data = await user.permissions();
 
-      res.status(200).send(data);
+      return res.status(200).send(data);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -132,10 +132,10 @@ export default class UserController {
 
       let data = user.attachPermissions(req.body.permissions);
 
-      res.status(200).send({ message: "attach permissions success" });
+      return res.status(200).send({ message: "attach permissions success" });
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -146,10 +146,10 @@ export default class UserController {
 
       let data = user.detachPermissions(req.body.permissions);
 
-      res.status(200).send({ message: "detach permissions success" });
+      return res.status(200).send({ message: "detach permissions success" });
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -160,10 +160,10 @@ export default class UserController {
 
       let data = await user.rooms();
 
-      res.status(200).send(data);
+      return res.status(200).send(data);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -174,10 +174,10 @@ export default class UserController {
 
       let data = await user.quizzes();
 
-      res.status(200).send(data);
+      return res.status(200).send(data);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 }

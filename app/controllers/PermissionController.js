@@ -5,10 +5,10 @@ export default class PermissionController {
     try {
       let data = await Permission.all();
 
-      res.status(200).send(data);
+      return res.status(200).send(data);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -20,10 +20,10 @@ export default class PermissionController {
       await data.users();
       await data.roles();
 
-      res.status(200).send(data);
+      return res.status(200).send(data);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -31,10 +31,10 @@ export default class PermissionController {
     try {
       let data = await Permission.create(req.body);
 
-      res.status(201).send({ message: "create success", data });
+      return res.status(201).send({ message: "create success", data });
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -45,10 +45,10 @@ export default class PermissionController {
 
       let data = await permission.update(req.body);
 
-      res.status(201).send({ message: "update success", data });
+      return res.status(201).send({ message: "update success", data });
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -59,10 +59,10 @@ export default class PermissionController {
 
       let data = await permission.delete();
 
-      res.status(200).send({ message: "delete success" });
+      return res.status(200).send({ message: "delete success" });
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -73,10 +73,10 @@ export default class PermissionController {
 
       let data = await permission.users();
 
-      res.status(200).send(data);
+      return res.status(200).send(data);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 
@@ -87,10 +87,10 @@ export default class PermissionController {
 
       let data = await permission.roles();
 
-      res.status(200).send(data);
+      return res.status(200).send(data);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      return res.status(400).send(error);
     }
   }
 }
