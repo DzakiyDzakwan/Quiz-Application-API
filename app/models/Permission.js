@@ -15,7 +15,11 @@ export default class Permission {
 
     try {
       const [results, fields] = await db.query(query);
-      return results;
+
+      let permissions = results.map((result) => {
+        return new Permission(result);
+      });
+      return permissions;
     } catch (error) {
       throw error;
     }
@@ -27,7 +31,11 @@ export default class Permission {
     try {
       const [results, fields] = await db.query(query);
 
-      return new Permission(results[0]);
+      if (results[0]) {
+        return new Permission(results[0]);
+      }
+
+      return results[0];
     } catch (error) {
       throw error;
     }
@@ -41,7 +49,12 @@ export default class Permission {
     const query = `SELECT * FROM permissions WHERE ${conditions.join(" AND ")}`;
     try {
       const [results, fields] = await db.query(query);
-      return results;
+
+      let permissions = results.map((result) => {
+        return new Permission(result);
+      });
+
+      return permissions;
     } catch (error) {
       throw error;
     }
