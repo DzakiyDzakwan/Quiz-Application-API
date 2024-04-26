@@ -3,7 +3,7 @@ import Permission from "../../app/models/Permission.js";
 
 export default class RoleSeeder {
   static async run() {
-    console.log(`Seeding RoleSeeder`);
+    console.log(`Seeding RoleSeeder...`);
 
     let roles = [
       {
@@ -44,22 +44,20 @@ export default class RoleSeeder {
           display_name: role.display_name,
         };
 
-        let new_role = await Role.where({ name: data.name });
+        let new_role = await Role.whereFirst({ name: data.name });
 
-        if (!new_role[0]) {
+        if (!new_role) {
           new_role = await Role.create(data);
         } else {
-          new_role = new_role[0];
           new_role = await new_role.update(data);
         }
 
         for (const permission of role.permissions) {
-          let p = await Permission.where({ name: permission.name });
+          let p = await Permission.whereFirst({ name: permission.name });
 
-          if (!p[0]) {
+          if (!p) {
             p = await Permission.create(permission);
           } else {
-            p = p[0];
             p = await p.update(permission);
           }
 

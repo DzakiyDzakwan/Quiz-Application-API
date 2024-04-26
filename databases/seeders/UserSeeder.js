@@ -5,13 +5,13 @@ import bcrypt from "bcrypt";
 
 export default class UserSeeder {
   static async run() {
-    console.log(`Seeding UserSeeder`);
+    console.log(`Seeding UserSeeder...`);
 
     let users = [
       {
-        fullname: "Andi Pratama",
-        username: "andipratama01",
-        email: "andipratama@gmail.com",
+        fullname: "Andi Gunawan",
+        username: "andigunawan01",
+        email: "andigunawan@gmail.com",
         password: "andi12345",
         roles: [{ name: "super" }, { name: "user" }],
         permissions: [],
@@ -51,25 +51,23 @@ export default class UserSeeder {
           password: await bcrypt.hash(user.password, 8),
         };
 
-        let new_user = await User.where({
+        let new_user = await User.whereFirst({
           username: user.username,
           email: user.email,
         });
 
-        if (!new_user[0]) {
+        if (!new_user) {
           new_user = await User.create(data);
         } else {
-          new_user = new_user[0];
           new_user = await new_user.update(data);
         }
 
         for (const role of user.roles) {
-          let r = await Role.where({ name: role.name });
+          let r = await Role.whereFirst({ name: role.name });
 
-          if (!r[0]) {
+          if (!r) {
             r = await Role.create(role);
           } else {
-            r = r[0];
             r = await r.update(role);
           }
 
@@ -77,12 +75,11 @@ export default class UserSeeder {
         }
 
         for (const permission of user.permissions) {
-          let p = await Permission.where({ name: permission.name });
+          let p = await Permission.whereFirst({ name: permission.name });
 
-          if (!p[0]) {
+          if (!p) {
             p = await Permission.create(permission);
           } else {
-            p = p[0];
             p = await p.update(p);
           }
 

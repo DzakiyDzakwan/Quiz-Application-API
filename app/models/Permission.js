@@ -41,7 +41,7 @@ export default class Permission {
     }
   }
 
-  static async where(criteria) {
+  static async whereAll(criteria) {
     const conditions = Object.entries(criteria).map(
       ([column, value]) => `${column} = '${value}'`
     );
@@ -55,6 +55,25 @@ export default class Permission {
       });
 
       return permissions;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async whereFirst(criteria) {
+    const conditions = Object.entries(criteria).map(
+      ([column, value]) => `${column} = '${value}'`
+    );
+
+    const query = `SELECT * FROM permissions WHERE ${conditions.join(" AND ")}`;
+    try {
+      const [results, fields] = await db.query(query);
+
+      let permissions = results.map((result) => {
+        return new Permission(result);
+      });
+
+      return permissions[0];
     } catch (error) {
       throw error;
     }

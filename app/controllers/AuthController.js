@@ -11,16 +11,13 @@ export default class AuthController {
 
     try {
       // Cek apakah username terdaftar
-      let existsUser = await User.where({ username: username });
+      let existsUser = await User.whereFirst({ username: username });
 
-      if (existsUser < 1) {
-        console.log(existsUser);
+      if (!existsUser) {
         return res
           .status(404)
           .send({ message: "username yang anda masukkan tidak terdaftar" });
       }
-
-      existsUser = existsUser[0];
 
       // Validasi Password
       let isPasswordValid = await bcrypt.compare(password, existsUser.password);
@@ -46,11 +43,11 @@ export default class AuthController {
   static async register(req, res) {
     try {
       // Check apakah username sudah terdaftar
-      let username = await User.where({
+      let username = await User.whereFirst({
         username: req.body.username,
       });
 
-      if (username.length > 0) {
+      if (username) {
         return res
           .status(400)
           .send({ message: "username yang anda masukan sudah terdaftar" });
@@ -58,11 +55,11 @@ export default class AuthController {
 
       // Check apakah email sudah terdaftar
 
-      let email = await User.where({
+      let email = await User.whereFirst({
         username: req.body.email,
       });
 
-      if (email.length > 0) {
+      if (email) {
         return res
           .status(400)
           .send({ message: "email yang anda masukan sudah terdaftar" });

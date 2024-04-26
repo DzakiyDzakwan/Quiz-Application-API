@@ -42,7 +42,7 @@ export default class Role {
     }
   }
 
-  static async where(criteria) {
+  static async whereAll(criteria) {
     const conditions = Object.entries(criteria).map(
       ([column, value]) => `${column} = '${value}'`
     );
@@ -57,6 +57,26 @@ export default class Role {
       });
 
       return roles;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async whereFirst(criteria) {
+    const conditions = Object.entries(criteria).map(
+      ([column, value]) => `${column} = '${value}'`
+    );
+
+    const query = `SELECT * FROM roles WHERE ${conditions.join(" AND ")}`;
+
+    try {
+      const [results, fields] = await db.query(query);
+
+      let roles = results.map((result) => {
+        return new Role(result);
+      });
+
+      return roles[0];
     } catch (error) {
       throw error;
     }

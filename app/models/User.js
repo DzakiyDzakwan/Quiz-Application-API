@@ -45,7 +45,7 @@ export default class User {
     }
   }
 
-  static async where(criteria) {
+  static async whereAll(criteria) {
     const conditions = Object.entries(criteria).map(
       ([column, value]) => `${column} = '${value}'`
     );
@@ -59,6 +59,25 @@ export default class User {
       });
 
       return users;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async whereFirst(criteria) {
+    const conditions = Object.entries(criteria).map(
+      ([column, value]) => `${column} = '${value}'`
+    );
+
+    const query = `SELECT * FROM users WHERE ${conditions.join(" AND ")}`;
+    try {
+      const [results, fields] = await db.query(query);
+
+      let users = results.map((result) => {
+        return new User(result);
+      });
+
+      return users[0];
     } catch (error) {
       throw error;
     }
