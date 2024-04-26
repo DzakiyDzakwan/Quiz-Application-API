@@ -18,7 +18,7 @@ export default class UserSeeder {
       },
       {
         fullname: "Budi Tjahyono",
-        username: "budtjahyono02",
+        username: "buditjahyono02",
         email: "budtjahyono@gmail.com",
         password: "budi12345",
         roles: [{ name: "admin" }, { name: "user" }],

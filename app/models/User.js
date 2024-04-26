@@ -335,9 +335,10 @@ export default class User {
   async rooms() {
     try {
       let query = `
-      SELECT * FROM rooms
+      SELECT rooms.code, rooms.room_master, rooms.name 
+      FROM rooms
       JOIN users ON users.id = rooms.room_master
-      WHERE users.id = ${this.id}
+      WHERE rooms.room_master = ${this.id}
       `;
 
       let [results, fields] = await db.query(query);
@@ -353,10 +354,9 @@ export default class User {
   async quizzes() {
     try {
       let query = `
-      SELECT quizzes.id, quizzes.title, quizzes.description, quizzes.difficulty, quizzes.created_at, quizzes.updated_at, rooms.*
+      SELECT quizzes.id, quizzes.title, quizzes.description, quizzes.difficulty, quizzes.created_at, quizzes.updated_at
       FROM quizzes
       INNER JOIN users ON users.id = quizzes.user_id
-      INNER JOIN rooms ON quizzes.room_code = rooms.code
       WHERE users.id = ${this.id}
       `;
 
