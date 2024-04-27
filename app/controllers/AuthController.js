@@ -1,9 +1,6 @@
 import User from "./../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 export default class AuthController {
   static async login(req, res) {
@@ -29,7 +26,7 @@ export default class AuthController {
       }
 
       // Login
-      const token = jwt.sign({ user: existsUser }, process.env.JWT_KEY, {
+      const token = jwt.sign({ user: existsUser.id }, process.env.JWT_KEY, {
         expiresIn: "1h",
       }); // (payload, secretkey, expiredTime)
 
