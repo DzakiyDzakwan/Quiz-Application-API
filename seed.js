@@ -4,9 +4,12 @@ import RoleSeeder from "./databases/seeders/RoleSeeder.js";
 import RoomSeeder from "./databases/seeders/RoomSeeder.js";
 import UserSeeder from "./databases/seeders/UserSeeder.js";
 import Database from "./app/models/Database.js";
+import QuizSeeder from "./databases/seeders/QuizSeeder.js";
 
 const seed = async () => {
   try {
+    console.log("Seeding start");
+
     await Database.table("questions").truncate();
     await Database.table("quizzes").truncate();
     await Database.table("rooms").truncate();
@@ -17,7 +20,9 @@ const seed = async () => {
     await RoleSeeder.run();
     await UserSeeder.run();
     await RoomSeeder.run();
-    console.log("Seeding complete. Exiting process...");
+    await QuizSeeder.run();
+
+    console.log("Seeding complete");
     process.exit(0); // Exit with success code
   } catch (error) {
     console.error("Seeding failed:", error);
