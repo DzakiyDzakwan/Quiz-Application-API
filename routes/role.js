@@ -1,8 +1,10 @@
 import { Router } from "express";
 import RoleController from "../app/controllers/RoleController.js";
+import auth from "../app/middlewares/AuthMiddleware.js";
 
 const router = Router();
 
+router.use(auth);
 router.get("/", RoleController.index);
 router.get("/:id", RoleController.show);
 router.post("/", RoleController.store);

@@ -12,10 +12,10 @@ router.get("/", (req, res) => {
   res.status(200).send({ message: "Hello World" });
 });
 
+router.use("/auth", AuthRoute);
 router.use("/user", UserRoute);
 router.use("/role", RoleRoute);
 router.use("/permission", PermissionRoute);
-router.use("/auth", AuthRoute);
 router.use("/room", RoomRoute);
 router.use("/profile", ProfileRoute);
 

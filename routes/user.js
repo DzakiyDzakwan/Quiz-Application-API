@@ -1,7 +1,9 @@
 import { Router } from "express";
 import UserController from "../app/controllers/UserController.js";
+import auth from "../app/middlewares/AuthMiddleware.js";
 
 const router = Router();
+router.use(auth);
 router.get("/", UserController.index);
 router.get("/:id", UserController.show);
 router.post("/", UserController.store);
