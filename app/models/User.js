@@ -170,7 +170,7 @@ export default class User {
     const values = new_role_ids.map((role_id) => [
       this.id,
       role_id,
-      this.updated_at,
+      moment().utc().format("YYYY-MM-DD HH:mm:ss"),
     ]);
 
     const query = `INSERT INTO user_roles (user_id, role_id, updated_at) VALUES ?`;
@@ -271,8 +271,9 @@ export default class User {
     const values = new_permission_ids.map((permission_id) => [
       this.id,
       permission_id,
-      this.updated_at,
+      moment().utc().format("YYYY-MM-DD HH:mm:ss"),
     ]);
+
     const query = `INSERT INTO user_permissions (user_id, permission_id, updated_at) VALUES ?`;
 
     try {

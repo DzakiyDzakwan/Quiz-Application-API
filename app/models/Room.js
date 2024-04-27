@@ -24,7 +24,7 @@ export default class Room {
   }
 
   static async all() {
-    const query = `SELECT * FROM rooms`;
+    const query = `SELECT * FROM rooms ORDER BY created_at`;
 
     try {
       const [results, fields] = await db.query(query);
@@ -40,7 +40,7 @@ export default class Room {
   }
 
   static async find(code) {
-    let query = `SELECT * FROM rooms WHERE code = ${code}`;
+    let query = `SELECT * FROM rooms WHERE code = '${code}'`;
 
     try {
       const [results, fields] = await db.query(query);
@@ -109,7 +109,9 @@ export default class Room {
     try {
       let [result, fields] = await db.query(query, payload);
 
-      return await this.find(result.insertId);
+      let room = await Room.all();
+
+      return room[room.length - 1];
     } catch (error) {
       throw error;
     }
@@ -123,7 +125,7 @@ export default class Room {
     ];
 
     let query = `
-    UPDATE rooms SET room_master = ?, name = ?, updated_at = ? WHERE code = ${this.code}
+    UPDATE rooms SET room_master = ?, name = ?, updated_at = ? WHERE code = '${this.code}'
     `;
 
     try {
@@ -136,7 +138,7 @@ export default class Room {
   }
 
   async delete() {
-    let query = `DELETE FROM rooms WHERE code = ${this.code}`;
+    let query = `DELETE FROM rooms WHERE code = '${this.code}'`;
     try {
       let [results, fields] = await db.query(query);
 
@@ -146,19 +148,86 @@ export default class Room {
     }
   }
 
-  async user() {
+  async master() {
     let query = `
     SELECT users.id, users.fullname, users.username, users.email, users.created_at, users.updated_at
     FROM users
     JOIN rooms
     ON rooms.room_master = users.id
-    WHERE rooms.code = ${this.code}
+    WHERE rooms.code = '${this.code}'
     `;
 
     try {
       let [results, fields] = await db.query(query);
 
-      this._user = results[0];
+      this._master = results[0];
+      return results;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async participants() {
+    let query = `
+    SELECT users.id, users.fullname, users.username, users.email, users.created_at, users.updated_at
+    FROM users
+    JOIN room_participants
+    ON room_participants.user_id = users.id
+    JOIN rooms
+    ON rooms.code = room_participants.room_code
+    WHERE room_participants.room_code = '${this.code}'
+    `;
+
+    try {
+      let [results, fields] = await db.query(query);
+
+      this._participants = results;
+      return results;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async addParticipant(user_id) {
+    if (!user_id) {
+      throw new Error("user tidak boleh kosong");
+    }
+
+    const participants = await this.participants();
+
+    const isExist = participants.find(
+      (participant) => participant.id === user_id
+    );
+
+    if (isExist) {
+      return "user sudah menjadi peserta ruangan";
+    }
+
+    const values = [
+      [user_id, this.code, moment().utc().format("YYYY-MM-DD HH:mm:ss")],
+    ];
+
+    const query = `INSERT INTO room_participants (user_id, room_code, updated_at) VALUES ?`;
+
+    try {
+      let [results, fields] = await db.query(query, [values]);
+
+      return results;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async removeParticipant(user_id) {
+    if (!user_id) {
+      throw new Error("user tidak boleh kosong");
+    }
+
+    const query = `DELETE FROM room_participants WHERE room_code = ? AND user_id = ?`;
+
+    try {
+      let [results, fields] = await db.query(query, [this.code, user_id]);
+
       return results;
     } catch (error) {
       throw error;
@@ -171,7 +240,7 @@ export default class Room {
     FROM quizzes
     JOIN rooms
     ON quizzes.room_code = rooms.code
-    WHERE rooms.code = ${this.code}
+    WHERE rooms.code = '${this.code}'
     `;
 
     try {
