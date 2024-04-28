@@ -112,7 +112,7 @@ export default class Quiz {
     ];
 
     let query = `
-        UPDATE rooms SET room_code = ?, title = ?, description = ?, difficulty = ?, updated_at = ? WHERE code = ${this.id}
+        UPDATE quizzes SET room_code = ?, title = ?, description = ?, difficulty = ?, updated_at = ? WHERE id = ${this.id}
         `;
 
     try {
@@ -249,7 +249,7 @@ export default class Quiz {
     try {
       let [results, fields] = await db.query(query);
 
-      this._room = results;
+      this._questions = results;
       return results;
     } catch (error) {
       throw error;

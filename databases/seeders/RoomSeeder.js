@@ -19,7 +19,7 @@ export default class RoomSeeder {
                 difficulty: "easy",
                 questions: [
                   {
-                    order: 1,
+                    question_order: 1,
                     content: "Berapakah jumlah dari 12 dan 18?",
                     answers: [
                       { content: "27", is_correct: false },
@@ -29,7 +29,7 @@ export default class RoomSeeder {
                     ],
                   },
                   {
-                    order: 2,
+                    question_order: 2,
                     content: "Berapakah hasil kali dari 5 dan 6?",
                     answers: [
                       { content: "25", is_correct: false },
@@ -39,7 +39,7 @@ export default class RoomSeeder {
                     ],
                   },
                   {
-                    order: 3,
+                    question_order: 3,
                     content: "Berapakah selisih antara 20 dan 8?",
                     answers: [
                       { content: "10", is_correct: false },
@@ -49,7 +49,7 @@ export default class RoomSeeder {
                     ],
                   },
                   {
-                    order: 4,
+                    question_order: 4,
                     content: "Berapakah hasil bagi dari 42 dibagi 7?",
                     answers: [
                       { content: "5", is_correct: false },
@@ -59,7 +59,7 @@ export default class RoomSeeder {
                     ],
                   },
                   {
-                    order: 5,
+                    question_order: 5,
                     content: "Berapakah akar pangkat dua dari 16?",
                     answers: [
                       { content: "2", is_correct: false },
@@ -102,16 +102,13 @@ export default class RoomSeeder {
               _room = await Room.create(data);
             }
 
-            for (const quiz of room.quizzes) {
-              let quiz_data = {
-                user_id: _user.id,
+            for (let quiz of room.quizzes) {
+              quiz = {
+                ...quiz,
                 room_code: _room.code,
-                title: quiz.title,
-                description: quiz.description,
-                difficulty: quiz.difficulty,
               };
 
-              await QuizSeeder.createQuiz(quiz_data);
+              await QuizSeeder.createQuiz(_user.id, quiz);
             }
           }
         }

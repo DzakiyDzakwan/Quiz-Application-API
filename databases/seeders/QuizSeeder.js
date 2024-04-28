@@ -1,5 +1,6 @@
 import User from "../../app/models/User.js";
 import Quiz from "../../app/models/Quiz.js";
+import Question from "../../app/models/Question.js";
 
 export default class QuizSeeder {
   static async run() {
@@ -15,7 +16,7 @@ export default class QuizSeeder {
             difficulty: "medium",
             questions: [
               {
-                order: 1,
+                question_order: 1,
                 content: "What is the name of the spaceship in Star Wars?",
                 answers: [
                   { content: "Enterprise", is_correct: false },
@@ -25,7 +26,7 @@ export default class QuizSeeder {
                 ],
               },
               {
-                order: 2,
+                question_order: 2,
                 content:
                   "Who directed the critically acclaimed film 'The Lord of the Rings' trilogy?",
                 answers: [
@@ -36,7 +37,7 @@ export default class QuizSeeder {
                 ],
               },
               {
-                order: 3,
+                question_order: 3,
                 content:
                   "What is the name of the iconic white shark from the movie 'Jaws'?",
                 answers: [
@@ -47,7 +48,7 @@ export default class QuizSeeder {
                 ],
               },
               {
-                order: 4,
+                question_order: 4,
                 content:
                   "Which movie won the Academy Award for Best Picture in 2023?",
                 answers: [
@@ -61,7 +62,7 @@ export default class QuizSeeder {
                 ],
               },
               {
-                order: 5,
+                question_order: 5,
                 content:
                   "In the movie 'The Godfather', what is the name of the family patriarch?",
                 answers: [
@@ -83,14 +84,7 @@ export default class QuizSeeder {
 
         if (_user) {
           for (const quiz of user.quizzes) {
-            let quiz_data = {
-              user_id: _user.id,
-              title: quiz.title,
-              description: quiz.description,
-              difficulty: quiz.difficulty,
-            };
-
-            await QuizSeeder.createQuiz(quiz_data);
+            await QuizSeeder.createQuiz(_user.id, quiz);
           }
         }
       }
@@ -99,16 +93,47 @@ export default class QuizSeeder {
     }
   }
 
-  static async createQuiz(quiz) {
-    let _quiz = await Quiz.whereFirst({
+  static async createQuiz(user_id, quiz) {
+    let data = {
+      user_id: user_id,
       title: quiz.title,
-      user_id: quiz.user_id,
+      room_code: quiz.room_code,
+      description: quiz.description,
+      difficulty: quiz.difficulty,
+    };
+
+    let _quiz = await Quiz.whereFirst({
+      user_id: user_id,
+      title: quiz.title,
     });
 
     if (!_quiz) {
-      _quiz = await Quiz.create(quiz);
+      _quiz = await Quiz.create(data);
     } else {
-      _quiz = await Quiz.update(quiz);
+      _quiz = await Quiz.update(data);
+    }
+
+    for (const question of quiz.questions) {
+      await QuizSeeder.createQuestion(_quiz.id, question);
+    }
+  }
+
+  static async createQuestion(quiz_id, question) {
+    let data = {
+      quiz_id: quiz_id,
+      question_order: question.question_order,
+      content: question.content,
+    };
+
+    let _question = await Question.whereFirst({
+      quiz_id: quiz_id,
+      question_order: question.question_order,
+    });
+
+    if (!_question) {
+      _question = await Question.create(data);
+    } else {
+      _question = await _question.update(data);
     }
   }
 }
