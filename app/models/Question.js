@@ -132,6 +132,20 @@ export default class Question {
     }
   }
 
+  async softDelete() {
+    let query = `UPDATE questions SET deleted_at = ? WHERE id = ${this.id}`;
+    try {
+      let [results, fields] = await db.query(
+        query,
+        moment().utc().format("YYYY-MM-DD HH:mm:ss")
+      );
+
+      return results;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async quiz() {
     let query = `
     SELECT quizzes.id, quizzes.user_id, quizzes.room_code, quizzes.title, quizzes.description, quizzes.difficulty, quizzes.created_at, quizzes.updated_at 
@@ -156,7 +170,7 @@ export default class Question {
     let query = `
     SELECT * FROM answers
     WHERE question_id = ${this.id}
-    AND deleted_at = NULL
+    AND deleted_at IS NULL
     `;
 
     try {

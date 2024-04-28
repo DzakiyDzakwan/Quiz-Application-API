@@ -133,6 +133,20 @@ export default class Answer {
     }
   }
 
+  async softDelete() {
+    let query = `UPDATE answers SET deleted_at = ? WHERE id = ${this.id}`;
+    try {
+      let [results, fields] = await db.query(
+        query,
+        moment().utc().format("YYYY-MM-DD HH:mm:ss")
+      );
+
+      return results;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async question() {
     let query = `
     SELECT questions.id, questions.quiz_id, questions.question_order, questions.content, questions.created_at, questions.updated_at, questions.deleted_at

@@ -194,6 +194,7 @@ export default class Quiz {
     let query = `
         SELECT * FROM questions
         WHERE quiz_id = ${this.id}
+        AND deleted_at IS NULL
         `;
 
     try {

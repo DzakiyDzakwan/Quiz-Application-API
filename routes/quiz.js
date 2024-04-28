@@ -12,6 +12,7 @@ router.put("/:id/update", QuizController.update);
 router.delete("/:id/delete", QuizController.destroy);
 
 router.get("/:id/questions", QuizController.questions);
+router.post("/:id/add-question", QuizController.addQuestion);
 
 router.get("/:id/leaderboard", QuizController.leaderboard);
 router.post("/:id/attempt", QuizController.attemptQuiz);

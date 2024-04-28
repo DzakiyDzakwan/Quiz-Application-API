@@ -1,3 +1,4 @@
+import Answer from "../models/Answer.js";
 import Attempt from "../models/Attempt.js";
 import Question from "../models/Question.js";
 import Quiz from "../models/Quiz.js";
@@ -93,11 +94,21 @@ export default class QuizController {
 
     let payload = {
       quiz_id: quiz_id,
-      ...req.body,
+      question_order: req.body.question_order,
+      content: req.body.content,
     };
 
     try {
       let data = await Question.create(payload);
+
+      for (const answer of req.body.answers) {
+        let answer_payload = {
+          question_id: data.id,
+          ...answer,
+        };
+
+        await Answer.create(answer_payload);
+      }
 
       return res.status(201).send({ message: "create success", data });
     } catch (error) {
