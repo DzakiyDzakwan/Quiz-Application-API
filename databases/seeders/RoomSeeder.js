@@ -17,6 +17,7 @@ export default class RoomSeeder {
                 title: "Matematika Dasar",
                 description: "Uji kemampuan matematika dasar Anda!",
                 difficulty: "easy",
+                time: "120",
                 questions: [
                   {
                     question_order: 1,

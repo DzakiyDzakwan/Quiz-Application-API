@@ -11,14 +11,20 @@ export default class Database {
   }
 
   async truncate() {
+    let reset_query = `
+      ALTER TABLE ${this.table_name} 
+      AUTO_INCREMENT=1;
+    `;
+
     let query = `
         DELETE FROM ${this.table_name}
     `;
 
     try {
-      let [result, fields] = await db.query(query);
+      await db.query(reset_query);
+      await db.query(query);
 
-      return result;
+      return;
     } catch (error) {
       throw error;
     }

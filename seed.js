@@ -10,6 +10,7 @@ const seed = async () => {
   try {
     console.log("Seeding start");
 
+    await Database.table("answers").truncate();
     await Database.table("questions").truncate();
     await Database.table("quizzes").truncate();
     await Database.table("rooms").truncate();

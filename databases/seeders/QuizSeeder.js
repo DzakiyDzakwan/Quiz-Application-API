@@ -15,6 +15,7 @@ export default class QuizSeeder {
             title: "Movie Trivia",
             description: "Test your knowledge of classic films!",
             difficulty: "medium",
+            max_attempt: 2,
             questions: [
               {
                 question_order: 1,
@@ -101,6 +102,8 @@ export default class QuizSeeder {
       room_code: quiz.room_code,
       description: quiz.description,
       difficulty: quiz.difficulty,
+      time: quiz.time || 30,
+      max_attempt: quiz.max_attempt || 1,
     };
 
     let _quiz = await Quiz.whereFirst({
