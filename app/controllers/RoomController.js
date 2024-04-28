@@ -105,7 +105,7 @@ export default class RoomController {
       let user = req.user;
 
       //   Get user_id from header
-      let data = room.removeParticipant(req.user.id);
+      let data = room.removeParticipant(user.id);
 
       return res.status(200).send({ message: "berhasil keluar ruangan" });
     } catch (error) {
