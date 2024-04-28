@@ -1,6 +1,7 @@
 import User from "../../app/models/User.js";
 import Quiz from "../../app/models/Quiz.js";
 import Question from "../../app/models/Question.js";
+import Answer from "../../app/models/Answer.js";
 
 export default class QuizSeeder {
   static async run() {
@@ -135,5 +136,19 @@ export default class QuizSeeder {
     } else {
       _question = await _question.update(data);
     }
+
+    for (const answer of question.answers) {
+      await QuizSeeder.createAnswer(_question.id, answer);
+    }
+  }
+
+  static async createAnswer(question_id, answer) {
+    let data = {
+      question_id: question_id,
+      content: answer.content,
+      is_correct: answer.is_correct,
+    };
+
+    let _answer = await Answer.create(data);
   }
 }
