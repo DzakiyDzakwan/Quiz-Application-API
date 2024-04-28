@@ -207,7 +207,7 @@ export default class Quiz {
       }
 
       this._questions = _questions;
-      return results;
+      return _questions;
     } catch (error) {
       throw error;
     }
@@ -215,27 +215,21 @@ export default class Quiz {
 
   async attempts() {
     let query = `
-        SELECT attempts.id, attempts.participants_id, users.fullname, users.username, users.email, attempts.score, attempts.time_remaining, attempts.created_at, attempts.updated_at, attempts.finished_at
-        FROM attempts
-        JOIN quizzes
-        ON quizzes.id = attempts.quiz_id
-        JOIN users
-        ON users.id = attempts.user_id
-        WHERE attempts.quiz_id = ${this.id}
-        ORDER BY attempts.score
+    SELECT attempts.id, attempts.quiz_id, attempts.user_id, users.fullname, users.username, users.email, attempts.score, attempts.time_remaining, attempts.created_at, attempts.updated_at, attempts.finished_at
+    FROM attempts
+    JOIN quizzes
+    ON quizzes.id = attempts.quiz_id
+    JOIN users
+    ON users.id = attempts.user_id
+    WHERE attempts.quiz_id = ${this.id}
+    ORDER BY attempts.score;
         `;
 
     try {
       let [results, fields] = await db.query(query);
 
-      let _attempts = [];
+      this._attempts = results;
 
-      for (const result of results) {
-        let answers = await Answer.whereAll({ question_id: result.id });
-        _questions.push({ ...result, answers: answers });
-      }
-
-      this._questions = _questions;
       return results;
     } catch (error) {
       throw error;

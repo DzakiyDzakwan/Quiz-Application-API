@@ -5,6 +5,7 @@ import PermissionRoute from "./permission.js";
 import AuthRoute from "./auth.js";
 import RoomRoute from "./room.js";
 import ProfileRoute from "./profile.js";
+import QuizRoute from "./quiz.js";
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use("/role", RoleRoute);
 router.use("/permission", PermissionRoute);
 router.use("/room", RoomRoute);
 router.use("/profile", ProfileRoute);
+router.use("/quiz", QuizRoute);
 
 export default router;
