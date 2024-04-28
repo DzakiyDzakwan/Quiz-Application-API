@@ -1,42 +1,40 @@
-import db from "./../../config/connection.js";
+import db from "./.././../config/connection.js";
 import moment from "moment";
 
-export default class Attempt {
-  constructor(data = {}) {
+export default class Response {
+  constructor() {
     this.id = data.id || null;
-    this.quiz_id = data.quiz_id || null;
-    this.user_id = data.user_id || null;
-    this.score = data.score || null;
-    this.time_remaining = data.time_remaining || null;
+    this.question_id = data.question_id || null;
+    this.attempt_id = data.attempt_id || null;
+    this.answer_id = data.answer_id || null;
     this.created_at = data.created_at || null;
     this.updated_at = data.updated_at || null;
-    this.finished = data.finished || null;
   }
 
   static async all() {
-    const query = `SELECT * FROM attempts`;
+    const query = `SELECT * FROM responses`;
 
     try {
       const [results, fields] = await db.query(query);
 
-      let attempts = results.map((result) => {
-        return new Attempt(result);
+      let responses = results.map((result) => {
+        return new Response(result);
       });
 
-      return attempts;
+      return responses;
     } catch (error) {
       throw error;
     }
   }
 
   static async find(id) {
-    let query = `SELECT * FROM attempts WHERE id = ${id}`;
+    let query = `SELECT * FROM responses WHERE id = ${id}`;
 
     try {
       const [results, fields] = await db.query(query);
 
       if (results[0]) {
-        return new Attempt(results[0]);
+        return new Response(results[0]);
       }
 
       return results[0];
@@ -56,16 +54,16 @@ export default class Attempt {
       }
     });
 
-    const query = `SELECT * FROM attempts WHERE ${conditions.join(" AND ")}`;
+    const query = `SELECT * FROM responses WHERE ${conditions.join(" AND ")}`;
 
     try {
       const [results, fields] = await db.query(query);
 
-      let attempts = results.map((result) => {
-        return new Attempt(result);
+      let responses = results.map((result) => {
+        return new Response(result);
       });
 
-      return attempts;
+      return responses;
     } catch (error) {
       throw error;
     }
@@ -82,23 +80,23 @@ export default class Attempt {
       }
     });
 
-    const query = `SELECT * FROM attempts WHERE ${conditions.join(" AND ")}`;
+    const query = `SELECT * FROM responses WHERE ${conditions.join(" AND ")}`;
 
     try {
       const [results, fields] = await db.query(query);
 
-      let attempts = results.map((result) => {
-        return new Attempt(result);
+      let responses = results.map((result) => {
+        return new Response(result);
       });
 
-      return attempts[0];
+      return responses[0];
     } catch (error) {
       throw error;
     }
   }
 
   static async create(data) {
-    let query = `INSERT INTO attempts SET ?`;
+    let query = `INSERT INTO responses SET ?`;
 
     let payload = {
       ...data,
@@ -108,7 +106,7 @@ export default class Attempt {
     try {
       let [result, fields] = await db.query(query, payload);
 
-      return await Attempt.find(result.insertId);
+      return await Response.find(result.insertId);
     } catch (error) {
       throw error;
     }
@@ -116,50 +114,28 @@ export default class Attempt {
 
   async update(data) {
     let payload = [
-      data.score || this.score,
-      data.time_remaining || this.time_remaining,
-      data.finished_at || null,
+      data.answer_id || null,
       moment().utc().format("YYYY-MM-DD HH:mm:ss"),
     ];
 
     let query = `
-            UPDATE attempts SET score = ?, time_remaining = ?, finished_at = ?, updated_at = ? WHERE id = ${this.id}
+            UPDATE responses SET answer_id = ?, updated_at = ? WHERE id = ${this.id}
             `;
 
     try {
       let [results, fields] = await db.query(query, payload);
 
-      return await Attempt.find(this.id);
+      return await Response.find(this.id);
     } catch (error) {
       throw error;
     }
   }
 
   async delete() {
-    let query = `DELETE FROM attempts WHERE id = ${this.id}`;
+    let query = `DELETE FROM responses WHERE id = ${this.id}`;
     try {
       let [results, fields] = await db.query(query);
 
-      return results;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async user() {
-    let query = `
-        SELECT users.id, users.fullname, users.username, users.email, users.password, users.created_at, users.updated_at
-        FROM users
-        JOIN attempts
-        ON users.id = attempts.user_id
-        WHERE attempts.id = ${this.id}
-        AND users.deleted_at IS NOT NULL
-        `;
-
-    try {
-      let [results, fields] = await db.query(query);
-
-      this._room = results[0];
       return results;
     } catch (error) {
       throw error;
@@ -170,9 +146,9 @@ export default class Attempt {
     let query = `
         SELECT *
         FROM quizzess
-        JOIN attempts
-        ON quizzes.id = attempts.quiz_id
-        WHERE attempts.id = ${this.id}
+        JOIN responses
+        ON quizzes.id = responses.quiz_id
+        WHERE responses.id = ${this.id}
         `;
 
     try {
@@ -185,19 +161,40 @@ export default class Attempt {
     }
   }
 
-  async responses() {
+  async question() {
     let query = `
-      SELECT attempts.*, questions.content as question, answers.content as answer, answers.is_correct as is_correct, 
-      FROM responses
-      JOIN questions ON questions.id = responses.question_id,
-      JOIN answers ON answers.id = responses.answer_id
-      WHERE attempt_id = ${this.id}
-    `;
+        SELECT *
+        FROM questions
+        JOIN responses
+        ON questions.id = responses.question_id
+        WHERE responses.id = ${this.id}
+        `;
 
     try {
       let [results, fields] = await db.query(query);
 
-      this._responses = results;
+      this._question = results[0];
+      return results;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async user() {
+    let query = `
+        SELECT users.id, users.fullname, users.username, users.email
+        FROM users
+        JOIN attempts
+        ON users.id = attempts.user_id
+        JOIN responses
+        ON attempts.id = responses.attempt_id
+        WHERE responses.id = ${this.id}
+        `;
+
+    try {
+      let [results, fields] = await db.query(query);
+
+      this._user = results[0];
       return results;
     } catch (error) {
       throw error;
