@@ -33,7 +33,9 @@ export default class UserController {
     try {
       let data = await User.create(req.body);
 
-      return res.status(201).send({ message: "create success", data });
+      return res
+        .status(201)
+        .send({ message: "berhasil menambahkan user", data });
     } catch (error) {
       console.log(error);
       return res.status(400).send(error);
@@ -45,9 +47,16 @@ export default class UserController {
       let id = parseInt(req.params.id);
       let user = await User.find(id);
 
+      let payload = {
+        fullname: body.fullname,
+        username: body.username,
+      };
+
       let data = await user.update(req.body);
 
-      return res.status(201).send({ message: "update success", data });
+      return res
+        .status(201)
+        .send({ message: "berhasil memperbarui user", data });
     } catch (error) {
       console.log(error);
       return res.status(400).send(error);
@@ -61,7 +70,7 @@ export default class UserController {
 
       let data = await user.delete();
 
-      return res.status(200).send({ message: "delete success" });
+      return res.status(200).send({ message: "berhasil menghapus user" });
     } catch (error) {
       console.log(error);
       return res.status(400).send(error);
@@ -88,8 +97,10 @@ export default class UserController {
       let user = await User.find(id);
 
       let data = await user.attachRoles(req.body.roles);
-      console.log(user);
-      return res.status(200).send({ message: "attach roles success", data });
+
+      return res
+        .status(200)
+        .send({ message: "berhasil menambahkan role user" });
     } catch (error) {
       console.log(error);
       return res.status(400).send(error);
@@ -104,7 +115,7 @@ export default class UserController {
       let data = await user.detachRoles(req.body.roles);
 
       console.log(user);
-      return res.status(200).send({ message: "detach roles success" });
+      return res.status(200).send({ message: "berhasil melepas role user" });
     } catch (error) {
       console.log(error);
       return res.status(400).send(error);
@@ -132,7 +143,9 @@ export default class UserController {
 
       let data = user.attachPermissions(req.body.permissions);
 
-      return res.status(200).send({ message: "attach permissions success" });
+      return res
+        .status(200)
+        .send({ message: "berhasil menambahkan permission user" });
     } catch (error) {
       console.log(error);
       return res.status(400).send(error);
@@ -146,7 +159,9 @@ export default class UserController {
 
       let data = user.detachPermissions(req.body.permissions);
 
-      return res.status(200).send({ message: "detach permissions success" });
+      return res
+        .status(200)
+        .send({ message: "berhasil melepas permission user" });
     } catch (error) {
       console.log(error);
       return res.status(400).send(error);
