@@ -36,7 +36,23 @@ export default class Role {
         return new Role(results[0]);
       }
 
-      return results[0];
+      return null;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async findOrFail(id) {
+    let query = `SELECT * FROM roles WHERE id = ${id}`;
+
+    try {
+      const [results, fields] = await db.query(query);
+
+      if (results[0]) {
+        return new Role(results[0]);
+      }
+
+      throw new Error(`tidak dapat menemukan role dengan id ${id}`);
     } catch (error) {
       throw error;
     }
