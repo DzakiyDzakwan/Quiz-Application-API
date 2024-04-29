@@ -1,5 +1,6 @@
 import db from "./../../config/connection.js";
 import moment from "moment";
+import Attempt from "./Attempt.js";
 
 export default class User {
   constructor(data = {}) {
@@ -366,6 +367,29 @@ export default class User {
       this._quizzes = results;
 
       return results;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async attempts() {
+    // let query = `
+    //   SELECT * FROM attempts
+    //   WHERE attempts.user.id = ${this.id}
+    // `;
+
+    try {
+      // let [results, fields] = await db.query(query);
+
+      let _attempts = await Attempt.whereAll({ user_id: this.id });
+
+      for (const attempt of _attempts) {
+        await attempt.quiz();
+      }
+
+      this._attempts = _attempts;
+
+      return _attempts;
     } catch (error) {
       throw error;
     }

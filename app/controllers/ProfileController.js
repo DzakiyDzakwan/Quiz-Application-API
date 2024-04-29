@@ -26,4 +26,30 @@ export default class ProfileController {
       return res.status(400).send(error);
     }
   }
+
+  static async attempts(req, res) {
+    try {
+      let user = req.user;
+
+      let data = await user.attempts();
+
+      return res.status(201).send(data);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).send(error);
+    }
+  }
+
+  static async rooms(req, res) {
+    try {
+      let user = req.user;
+
+      let data = await user.rooms();
+
+      return res.status(201).send(data);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).send(error);
+    }
+  }
 }
