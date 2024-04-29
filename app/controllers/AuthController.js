@@ -8,26 +8,24 @@ export default class AuthController {
     const { username, password } = req.body;
 
     try {
-      // Cek apakah username terdaftar
-      let existsUser = await User.whereFirst({ username: username });
-
-      if (!existsUser) {
-        return res
-          .status(404)
-          .send({ message: "username yang anda masukkan tidak terdaftar" });
-      }
+      let user = await User.whereFirst({ username: username });
 
       // Validasi Password
-      let isPasswordValid = await bcrypt.compare(password, existsUser.password);
+      let isPasswordValid = await bcrypt.compare(password, user.password);
 
       if (!isPasswordValid) {
-        return res
-          .status(404)
-          .send({ message: "password yang anda masukkan salah" });
+        return res.status(404).send({
+          errors: [
+            {
+              field: "password",
+              message: "password yang anda masukan salah",
+            },
+          ],
+        });
       }
 
       // Login
-      const token = jwt.sign({ user: existsUser.id }, process.env.JWT_KEY, {
+      const token = jwt.sign({ user: user.id }, process.env.JWT_KEY, {
         expiresIn: "1h",
       }); // (payload, secretkey, expiredTime)
 
@@ -40,29 +38,6 @@ export default class AuthController {
 
   static async register(req, res) {
     try {
-      // Check apakah username sudah terdaftar
-      let username = await User.whereFirst({
-        username: req.body.username,
-      });
-
-      if (username) {
-        return res
-          .status(400)
-          .send({ message: "username yang anda masukan sudah terdaftar" });
-      }
-
-      // Check apakah email sudah terdaftar
-
-      let email = await User.whereFirst({
-        username: req.body.email,
-      });
-
-      if (email) {
-        return res
-          .status(400)
-          .send({ message: "email yang anda masukan sudah terdaftar" });
-      }
-
       let payload = {
         fullname: req.body.fullname,
         username: req.body.username,
