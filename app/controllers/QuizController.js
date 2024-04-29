@@ -2,6 +2,9 @@ import Answer from "../models/Answer.js";
 import Attempt from "../models/Attempt.js";
 import Question from "../models/Question.js";
 import Quiz from "../models/Quiz.js";
+import Response from "../models/Response.js";
+
+import moment from "moment";
 
 export default class QuizController {
   static async index(req, res) {
@@ -146,6 +149,61 @@ export default class QuizController {
       let data = await Attempt.create(payload);
 
       return res.status(201).send({ message: "attempt success" });
+    } catch (error) {
+      console.log(error);
+      return res.status(400).send(error);
+    }
+  }
+
+  static async submitQuiz(req, res) {
+    try {
+      const id = parseInt(req.params.id);
+
+      const attempt = await Attempt.find(id);
+
+      const quiz = await attempt.quiz();
+
+      const questions = await quiz.questions();
+
+      const point = 100 / questions.length;
+
+      let score = 0;
+
+      let responses = req.body.responses;
+
+      for (const response of responses) {
+        let response_payload = {
+          attempt_id: attempt.id,
+          ...response,
+        };
+
+        let _response = await Response.whereFirst({
+          attempt_id: attempt.id,
+          question_id: response.question_id,
+        });
+
+        if (!_response) {
+          await Response.create(response_payload);
+        } else {
+          await _response.update(response_payload);
+        }
+      }
+
+      responses = await attempt.responses();
+
+      for (const response of responses) {
+        if (response.is_correct) {
+          score = score + point;
+        }
+      }
+
+      await attempt.update({
+        score: score,
+        time_remaining: "0",
+        finished_at: moment().utc().format("YYYY-MM-DD HH:mm:ss"),
+      });
+
+      return res.status(200).send({ message: "quiz submitted" });
     } catch (error) {
       console.log(error);
       return res.status(400).send(error);

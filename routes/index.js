@@ -8,6 +8,7 @@ import ProfileRoute from "./profile.js";
 import QuizRoute from "./quiz.js";
 import QuestionRoute from "./question.js";
 import AnswerRoute from "./answer.js";
+import AttemptRoute from "./attempt.js";
 
 const router = Router();
 
@@ -24,5 +25,6 @@ router.use("/profile", ProfileRoute);
 router.use("/quiz", QuizRoute);
 router.use("/question", QuestionRoute);
 router.use("/answer", AnswerRoute);
+router.use("/attempt", AttemptRoute);
 
 export default router;

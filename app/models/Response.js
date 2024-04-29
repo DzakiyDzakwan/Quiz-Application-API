@@ -2,7 +2,7 @@ import db from "./.././../config/connection.js";
 import moment from "moment";
 
 export default class Response {
-  constructor() {
+  constructor(data = {}) {
     this.id = data.id || null;
     this.question_id = data.question_id || null;
     this.attempt_id = data.attempt_id || null;

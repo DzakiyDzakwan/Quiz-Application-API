@@ -195,6 +195,7 @@ export default class Quiz {
         SELECT * FROM questions
         WHERE quiz_id = ${this.id}
         AND deleted_at IS NULL
+        ORDER BY questions.question_order
         `;
 
     try {

@@ -1,5 +1,6 @@
 import db from "./../../config/connection.js";
 import moment from "moment";
+import Quiz from "./Quiz.js";
 
 export default class Attempt {
   constructor(data = {}) {
@@ -10,7 +11,7 @@ export default class Attempt {
     this.time_remaining = data.time_remaining || null;
     this.created_at = data.created_at || null;
     this.updated_at = data.updated_at || null;
-    this.finished = data.finished || null;
+    this.finished_at = data.finished_at || null;
   }
 
   static async all() {
@@ -167,19 +168,22 @@ export default class Attempt {
   }
 
   async quiz() {
-    let query = `
-        SELECT *
-        FROM quizzess
-        JOIN attempts
-        ON quizzes.id = attempts.quiz_id
-        WHERE attempts.id = ${this.id}
-        `;
+    // let query = `
+    //     SELECT *
+    //     FROM quizzes
+    //     JOIN attempts
+    //     ON quizzes.id = attempts.quiz_id
+    //     WHERE attempts.id = ${this.id}
+    //     `;
 
     try {
-      let [results, fields] = await db.query(query);
+      // let [results, fields] = await db.query(query);
 
-      this._room = results[0];
-      return results;
+      let _quiz = await Quiz.find(this.quiz_id);
+
+      this._quiz = _quiz;
+
+      return _quiz;
     } catch (error) {
       throw error;
     }
@@ -187,11 +191,11 @@ export default class Attempt {
 
   async responses() {
     let query = `
-      SELECT attempts.*, questions.content as question, answers.content as answer, answers.is_correct as is_correct, 
+      SELECT questions.content as question, answers.content as answer, answers.is_correct as is_correct
       FROM responses
-      JOIN questions ON questions.id = responses.question_id,
+      JOIN questions ON questions.id = responses.question_id
       JOIN answers ON answers.id = responses.answer_id
-      WHERE attempt_id = ${this.id}
+      WHERE responses.attempt_id = ${this.id}
     `;
 
     try {
