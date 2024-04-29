@@ -17,11 +17,11 @@ router.get("/", (req, res) => {
 });
 
 router.use("/auth", AuthRoute);
+router.use("/profile", ProfileRoute);
 router.use("/user", UserRoute);
 router.use("/role", RoleRoute);
 router.use("/permission", PermissionRoute);
 router.use("/room", RoomRoute);
-router.use("/profile", ProfileRoute);
 router.use("/quiz", QuizRoute);
 router.use("/question", QuestionRoute);
 router.use("/answer", AnswerRoute);

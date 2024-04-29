@@ -9,7 +9,7 @@ export default class QuizSeeder {
 
     let users = [
       {
-        username: "andigunawan01",
+        username: "usertesting03",
         quizzes: [
           {
             title: "Movie Trivia",

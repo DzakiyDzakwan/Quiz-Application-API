@@ -1,6 +1,7 @@
 import User from "./../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import Role from "../models/Role.js";
 
 export default class AuthController {
   static async login(req, res) {
@@ -71,8 +72,13 @@ export default class AuthController {
 
       let result = await User.create(payload);
 
+      let role = await Role.whereFirst({ name: "user" });
+
+      await result.attachRoles([role.id]);
+
       return res.status(201).send({ message: "Berhasil mendaftarkan akun" });
     } catch (error) {
+      console.log(error);
       return res.status(500).send(error);
     }
   }

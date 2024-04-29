@@ -102,7 +102,7 @@ export default class Role {
   async update(data) {
     let payload = [
       data.name || this.fullname,
-      data.display_name || this.username,
+      data.display_name || this.display_name,
       moment().utc().format("YYYY-MM-DD HH:mm:ss"),
     ];
 

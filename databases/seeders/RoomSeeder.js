@@ -8,7 +8,7 @@ export default class RoomSeeder {
 
     let users = [
       {
-        username: "buditjahyono02",
+        username: "usertesting01",
         rooms: [
           {
             name: "Kelas Matematika",
@@ -76,7 +76,7 @@ export default class RoomSeeder {
         ],
       },
       {
-        username: "cacacantika03",
+        username: "usertesting02",
         rooms: [
           {
             name: "Kelas XII IPA-5",
