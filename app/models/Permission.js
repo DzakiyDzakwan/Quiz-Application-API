@@ -35,7 +35,23 @@ export default class Permission {
         return new Permission(results[0]);
       }
 
-      return results[0];
+      return null;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async findOrFail(id) {
+    let query = `SELECT * FROM permissions WHERE id = ${id}`;
+
+    try {
+      const [results, fields] = await db.query(query);
+
+      if (results[0]) {
+        return new Permission(results[0]);
+      }
+
+      throw new Error(`tidak dapat menemukan permission dengan id ${id}`);
     } catch (error) {
       throw error;
     }
