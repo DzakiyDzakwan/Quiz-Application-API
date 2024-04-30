@@ -10,7 +10,7 @@ export default class ProfileController {
       return res.status(200).send(data);
     } catch (error) {
       console.log(error);
-      return res.status(400).send(error);
+      return res.status(400).send({ errors: error.message });
     }
   }
 
@@ -23,7 +23,7 @@ export default class ProfileController {
       return res.status(201).send({ message: "update success", data });
     } catch (error) {
       console.log(error);
-      return res.status(400).send(error);
+      return res.status(400).send({ errors: error.message });
     }
   }
 
@@ -36,7 +36,7 @@ export default class ProfileController {
       return res.status(201).send(data);
     } catch (error) {
       console.log(error);
-      return res.status(400).send(error);
+      return res.status(400).send({ errors: error.message });
     }
   }
 
@@ -49,7 +49,7 @@ export default class ProfileController {
       return res.status(201).send(data);
     } catch (error) {
       console.log(error);
-      return res.status(400).send(error);
+      return res.status(400).send({ errors: error.message });
     }
   }
 }
