@@ -35,7 +35,7 @@ Project ini dikembangkan menggunakan [ExpressJS](https://expressjs.com/) sebagai
    npm installl
    ```
 
-5. Ubah file `.env.example` menjadi `.env`, lalu sesuaikan bagian berikut dengan database yang digunakan
+5. Ubah file `.env.example` menjadi `.env`, lalu sesuaikan bagian berikut sesuai dengan database yang digunakan
    ```
    MYSQL_HOST=127.0.0.1
    MYSQL_PORT=3306
@@ -62,6 +62,7 @@ Project ini dikembangkan menggunakan [ExpressJS](https://expressjs.com/) sebagai
 4. Pengelolaan Pertanyaan Kuis
 5. Pengelolaan Jawaban Pertanyaan Kuis
 6. Pengelolaan Peserta Kuis
+7. Kuis Leaderboard
 
 # Contact Me
 
