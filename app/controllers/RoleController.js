@@ -3,8 +3,11 @@ import Role from "../models/Role.js";
 
 export default class RoleController {
   static async index(req, res) {
-    if (!(await can(req.user, ["sudo", "super-role", "read-role"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-role", "read-role"]))) {
+      return res.status(403).send({
+        errors: "anda tidak memiliki hak akses untuk endpoint ini",
+      });
+    }
 
     try {
       let data = await Role.all();
@@ -18,8 +21,11 @@ export default class RoleController {
   }
 
   static async show(req, res) {
-    if (!(await can(req.user, ["sudo", "super-role", "read-role"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-role", "read-role"]))) {
+      return res.status(403).send({
+        errors: "anda tidak memiliki hak akses untuk endpoint ini",
+      });
+    }
 
     try {
       let id = parseInt(req.params.id);
@@ -37,8 +43,11 @@ export default class RoleController {
   }
 
   static async store(req, res) {
-    if (!(await can(req.user, ["sudo", "super-role", "create-role"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-role", "create-role"]))) {
+      return res.status(403).send({
+        errors: "anda tidak memiliki hak akses untuk endpoint ini",
+      });
+    }
 
     try {
       let data = await Role.create(req.body);
@@ -52,8 +61,11 @@ export default class RoleController {
   }
 
   static async update(req, res) {
-    if (!(await can(req.user, ["sudo", "super-role", "update-role"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-role", "update-role"]))) {
+      return res.status(403).send({
+        errors: "anda tidak memiliki hak akses untuk endpoint ini",
+      });
+    }
 
     try {
       let id = parseInt(req.params.id);
@@ -70,8 +82,11 @@ export default class RoleController {
   }
 
   static async destroy(req, res) {
-    if (!(await can(req.user, ["sudo", "super-role", "delete-role"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-role", "delete-role"]))) {
+      return res.status(403).send({
+        errors: "anda tidak memiliki hak akses untuk endpoint ini",
+      });
+    }
 
     try {
       let id = parseInt(req.params.id);
@@ -88,8 +103,11 @@ export default class RoleController {
   }
 
   static async users(req, res) {
-    if (!(await can(req.user, ["sudo", "super-role", "read-role"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-role", "read-role"]))) {
+      return res.status(403).send({
+        errors: "anda tidak memiliki hak akses untuk endpoint ini",
+      });
+    }
 
     try {
       let id = parseInt(req.params.id);
@@ -106,8 +124,11 @@ export default class RoleController {
   }
 
   static async permissions(req, res) {
-    if (!(await can(req.user, ["sudo", "super-role", "read-role"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-role", "read-role"]))) {
+      return res.status(403).send({
+        errors: "anda tidak memiliki hak akses untuk endpoint ini",
+      });
+    }
 
     let id = parseInt(req.params.id);
     try {
@@ -125,8 +146,11 @@ export default class RoleController {
   }
 
   static async attachPermission(req, res) {
-    if (!(await can(req.user, ["sudo", "super-role", "update-role"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-role", "update-role"]))) {
+      return res.status(403).send({
+        errors: "anda tidak memiliki hak akses untuk endpoint ini",
+      });
+    }
 
     let id = parseInt(req.params.id);
     try {
@@ -143,8 +167,11 @@ export default class RoleController {
   }
 
   static async detachPermission(req, res) {
-    if (!(await can(req.user, ["sudo", "super-role", "update-role"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-role", "update-role"]))) {
+      return res.status(403).send({
+        errors: "anda tidak memiliki hak akses untuk endpoint ini",
+      });
+    }
 
     let id = parseInt(req.params.id);
     try {
