@@ -7,7 +7,8 @@ const router = Router();
 router.use(auth);
 router.get("/", ProfileController.show);
 router.patch("/update", ProfileController.update);
+router.get("/quizzes", ProfileController.quizzes);
 router.get("/rooms", ProfileController.rooms);
-router.get("/attempts", ProfileController.attempts);
+router.get("/history", ProfileController.history);
 
 export default router;

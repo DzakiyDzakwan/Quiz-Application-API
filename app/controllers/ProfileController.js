@@ -1,3 +1,4 @@
+import Attempt from "../models/Attempt.js";
 import User from "../models/User.js";
 
 export default class ProfileController {
@@ -27,11 +28,11 @@ export default class ProfileController {
     }
   }
 
-  static async attempts(req, res) {
+  static async rooms(req, res) {
     try {
       let user = req.user;
 
-      let data = await user.attempts();
+      let data = await user.rooms();
 
       return res.status(201).send(data);
     } catch (error) {
@@ -40,11 +41,27 @@ export default class ProfileController {
     }
   }
 
-  static async rooms(req, res) {
+  static async quizzes(req, res) {
     try {
       let user = req.user;
 
-      let data = await user.rooms();
+      let data = await user.quizzes();
+
+      return res.status(201).send(data);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).send({ errors: error.message });
+    }
+  }
+
+  static async history(req, res) {
+    try {
+      let user = req.user;
+
+      let data = await Attempt.whereAll({
+        user_id: this.id,
+        finished_at: "notnull",
+      });
 
       return res.status(201).send(data);
     } catch (error) {
