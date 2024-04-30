@@ -1,10 +1,10 @@
 import { Router } from "express";
+import AuthRoute from "./auth.js";
+import ProfileRoute from "./profile.js";
 import UserRoute from "./user.js";
 import RoleRoute from "./role.js";
 import PermissionRoute from "./permission.js";
-import AuthRoute from "./auth.js";
 import RoomRoute from "./room.js";
-import ProfileRoute from "./profile.js";
 import QuizRoute from "./quiz.js";
 import QuestionRoute from "./question.js";
 import AnswerRoute from "./answer.js";

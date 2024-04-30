@@ -4,7 +4,7 @@ const admin = async (req, res, next) => {
   if (!is_role) {
     return res
       .status(403)
-      .send({ message: "anda tidak memiliki akses ke endpoint ini" });
+      .send({ message: "anda tidak memiliki hak akses untuk endpoint ini" });
   }
 
   next();

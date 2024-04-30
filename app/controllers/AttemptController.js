@@ -1,7 +1,11 @@
+import can from "../../helpers/can.js";
 import Attempt from "../models/Attempt.js";
 
 export default class AttemptController {
   static async show(req, res) {
+    if (!(await can(req.user, ["sudo", "super-attempt", "read-attempt"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
       let id = parseInt(req.params.id);
 

@@ -46,6 +46,22 @@ export default class Question {
     }
   }
 
+  static async findOrFail(id) {
+    let query = `SELECT * FROM questions WHERE id = ${id}`;
+
+    try {
+      const [results, fields] = await db.query(query);
+
+      if (results[0]) {
+        return new Question(results[0]);
+      }
+
+      throw new Error(`tidak dapat menemukan pertanyaan dengan id ${id}`);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   static async whereAll(criteria) {
     const conditions = Object.entries(criteria).map(([column, value]) => {
       if (value === "null") {

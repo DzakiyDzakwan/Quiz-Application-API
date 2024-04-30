@@ -51,6 +51,22 @@ export default class Quiz {
     }
   }
 
+  static async findOrFail(id) {
+    let query = `SELECT * FROM quizzes WHERE id = ${id}`;
+
+    try {
+      const [results, fields] = await db.query(query);
+
+      if (results[0]) {
+        return new Quiz(results[0]);
+      }
+
+      throw new Error(`tidak dapat menemukan kuis dengan id ${id}`);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   static async whereAll(criteria) {
     const conditions = Object.entries(criteria).map(([column, value]) => {
       if (value === "null") {

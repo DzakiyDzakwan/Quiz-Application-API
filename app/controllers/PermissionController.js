@@ -1,7 +1,11 @@
+import can from "../../helpers/can.js";
 import Permission from "./../models/Permission.js";
 
 export default class PermissionController {
   static async index(req, res) {
+    if (!(await can(req.user, ["sudo", "super-permission", "read-permission"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
       let data = await Permission.all();
 
@@ -12,6 +16,9 @@ export default class PermissionController {
   }
 
   static async show(req, res) {
+    if (!(await can(req.user, ["sudo", "super-permission", "read-permission"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
       let id = parseInt(req.params.id);
       let data = await Permission.findOrFail(id);
@@ -26,6 +33,11 @@ export default class PermissionController {
   }
 
   static async store(req, res) {
+    if (
+      !(await can(req.user, ["sudo", "super-permission", "create-permission"]))
+    )
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
       let data = await Permission.create(req.body);
 
@@ -36,6 +48,11 @@ export default class PermissionController {
   }
 
   static async update(req, res) {
+    if (
+      !(await can(req.user, ["sudo", "super-permission", "update-permission"]))
+    )
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
       let id = parseInt(req.params.id);
       let permission = await Permission.findOrFail(id);
@@ -49,6 +66,11 @@ export default class PermissionController {
   }
 
   static async destroy(req, res) {
+    if (
+      !(await can(req.user, ["sudo", "super-permission", "delete-permission"]))
+    )
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
       let id = parseInt(req.params.id);
       let permission = await Permission.findOrFail(id);
@@ -62,6 +84,9 @@ export default class PermissionController {
   }
 
   static async users(req, res) {
+    if (!(await can(req.user, ["sudo", "super-permission", "read-permission"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
       let id = parseInt(req.params.id);
       let permission = await Permission.findOrFail(id);
@@ -75,6 +100,9 @@ export default class PermissionController {
   }
 
   static async roles(req, res) {
+    if (!(await can(req.user, ["sudo", "super-permission", "read-permission"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     let id = parseInt(req.params.id);
     try {
       let permission = await Permission.findOrFail(id);

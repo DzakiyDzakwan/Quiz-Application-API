@@ -1,3 +1,4 @@
+import can from "../../helpers/can.js";
 import Answer from "../models/Answer.js";
 import Attempt from "../models/Attempt.js";
 import Question from "../models/Question.js";
@@ -8,6 +9,9 @@ import moment from "moment";
 
 export default class QuizController {
   static async index(req, res) {
+    if (!(await can(req.user, ["sudo", "super-quiz", "read-quiz"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
       let data = await Quiz.whereAll({ room_code: "null" });
 
@@ -19,6 +23,9 @@ export default class QuizController {
   }
 
   static async show(req, res) {
+    if (!(await can(req.user, ["sudo", "super-quiz", "read-quiz"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
       let id = parseInt(req.params.id);
       let data = await Quiz.find(id);
@@ -35,6 +42,9 @@ export default class QuizController {
   }
 
   static async store(req, res) {
+    if (!(await can(req.user, ["sudo", "super-quiz", "create-quiz"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     let payload = {
       user_id: req.user.id,
       ...req.body,
@@ -51,6 +61,9 @@ export default class QuizController {
   }
 
   static async update(req, res) {
+    if (!(await can(req.user, ["sudo", "super-quiz", "update-quiz"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
       let id = parseInt(req.params.id);
       let quiz = await Quiz.find(id);
@@ -65,6 +78,9 @@ export default class QuizController {
   }
 
   static async destroy(req, res) {
+    if (!(await can(req.user, ["sudo", "super-quiz", "delete-quiz"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
       let id = parseInt(req.params.id);
       let quiz = await Quiz.find(id);
@@ -79,6 +95,9 @@ export default class QuizController {
   }
 
   static async questions(req, res) {
+    if (!(await can(req.user, ["sudo", "super-question", "read-question"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
       let id = parseInt(req.params.id);
       let quiz = await Quiz.find(id);
@@ -93,6 +112,9 @@ export default class QuizController {
   }
 
   static async addQuestion(req, res) {
+    if (!(await can(req.user, ["sudo", "super-question", "create-question"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     let quiz_id = parseInt(req.params.id);
 
     let payload = {
@@ -121,6 +143,9 @@ export default class QuizController {
   }
 
   static async leaderboard(req, res) {
+    if (!(await can(req.user, ["sudo", "super-quiz", "read-quiz"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     let id = parseInt(req.params.id);
 
     try {
@@ -136,6 +161,9 @@ export default class QuizController {
   }
 
   static async attemptQuiz(req, res) {
+    if (!(await can(req.user, ["sudo", "super-attempt", "create-attempt"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
       let id = parseInt(req.params.id);
       let quiz = await Quiz.find(id);
@@ -156,6 +184,9 @@ export default class QuizController {
   }
 
   static async submitQuiz(req, res) {
+    if (!(await can(req.user, ["sudo", "super-response", "create-response"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
       const id = parseInt(req.params.id);
 

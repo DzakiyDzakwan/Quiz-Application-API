@@ -57,6 +57,22 @@ export default class Room {
     }
   }
 
+  static async findOrFail(code) {
+    let query = `SELECT * FROM rooms WHERE code = '${code}'`;
+
+    try {
+      const [results, fields] = await db.query(query);
+
+      if (results[0]) {
+        return new Room(results[0]);
+      }
+
+      throw new Error(`tidak dapat menemukan ruangan dengan code ${code}`);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   static async whereAll(criteria) {
     const conditions = Object.entries(criteria).map(([column, value]) => {
       if (value === "null") {

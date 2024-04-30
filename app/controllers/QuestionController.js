@@ -1,7 +1,11 @@
+import can from "../../helpers/can.js";
 import Question from "../models/Question.js";
 
 export default class QuestionController {
   static async show(req, res) {
+    if (!(await can(req.user, ["sudo", "super-question", "read-question"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
       let id = parseInt(req.params.id);
       let data = await Question.find(id);
@@ -20,6 +24,9 @@ export default class QuestionController {
 
   static async update(req, res) {
     try {
+      if (!(await can(req.user, ["sudo", "super-question", "update-question"])))
+        throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
       let id = parseInt(req.params.id);
       let question = await Question.find(id);
 
@@ -33,6 +40,9 @@ export default class QuestionController {
   }
 
   static async softDestroy(req, res) {
+    if (!(await can(req.user, ["sudo", "super-question", "delete-question"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
       let id = parseInt(req.params.id);
       let question = await Question.find(id);
@@ -47,6 +57,9 @@ export default class QuestionController {
   }
 
   static async destroy(req, res) {
+    if (!(await can(req.user, ["sudo"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
       let id = parseInt(req.params.id);
       let question = await Question.find(id);

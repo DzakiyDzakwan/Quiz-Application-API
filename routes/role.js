@@ -8,10 +8,11 @@ import {
 } from "../app/validators/RoleRules.js";
 import auth from "../app/middlewares/AuthMiddleware.js";
 import validate from "../app/validators/validate.js";
+import sudo from "../app/middlewares/SuperMiddleware.js";
 
 const router = Router();
 
-router.use(auth);
+router.use(auth, sudo);
 router.get("/", RoleController.index);
 router.get("/:id", RoleController.show);
 router.post("/", store(), validate, RoleController.store);

@@ -10,11 +10,15 @@ import {
 } from "./../app/validators/UserRules.js";
 import auth from "../app/middlewares/AuthMiddleware.js";
 import validate from "../app/validators/validate.js";
+import admin from "../app/middlewares/AdminMiddleware.js";
+import sudo from "../app/middlewares/SuperMiddleware.js";
 
 const router = Router();
 router.use(auth);
-router.get("/", UserController.index);
-router.get("/:id", UserController.show);
+router.get("/", admin, UserController.index);
+router.get("/:id", admin, UserController.show);
+
+router.use(sudo);
 router.post("/", store(), validate, UserController.store);
 router.put("/:id/update", update(), validate, UserController.update);
 router.delete("/:id/delete", UserController.destroy);
@@ -40,7 +44,6 @@ router.post(
   validate,
   UserController.attachPermission
 );
-
 router.delete(
   "/:id/detach-permissions",
   detachPermission(),

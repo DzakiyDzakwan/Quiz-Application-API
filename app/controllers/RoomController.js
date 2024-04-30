@@ -1,7 +1,11 @@
+import can from "../../helpers/can.js";
 import Room from "../models/Room.js";
 
 export default class RoomController {
   static async index(req, res) {
+    if (!(await can(req.user, ["sudo", "super-room", "read-room"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
       let data = await Room.all();
 
@@ -13,8 +17,11 @@ export default class RoomController {
   }
 
   static async show(req, res) {
+    if (!(await can(req.user, ["sudo", "super-room", "read-room"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
-      let data = await Room.find(req.params.code);
+      let data = await Room.findOrFail(req.params.code);
 
       await data.master();
       await data.participants();
@@ -28,6 +35,9 @@ export default class RoomController {
   }
 
   static async store(req, res) {
+    if (!(await can(req.user, ["sudo", "super-room", "create-room"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     let payload = {
       room_master: req.user.id,
       name: req.body.name,
@@ -44,8 +54,11 @@ export default class RoomController {
   }
 
   static async update(req, res) {
+    if (!(await can(req.user, ["sudo", "super-room", "update-room"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
-      let room = await Room.find(req.params.code);
+      let room = await Room.findOrFail(req.params.code);
 
       let data = await room.update(req.body);
 
@@ -57,8 +70,11 @@ export default class RoomController {
   }
 
   static async destroy(req, res) {
+    if (!(await can(req.user, ["sudo", "super-room", "delete-room"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
-      let room = await Room.find(req.params.code);
+      let room = await Room.findOrFail(req.params.code);
 
       let data = await room.delete();
 
@@ -70,8 +86,11 @@ export default class RoomController {
   }
 
   static async participants(req, res) {
+    if (!(await can(req.user, ["sudo", "super-room", "read-participants"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
-      let room = await Room.find(req.params.code);
+      let room = await Room.findOrFail(req.params.code);
 
       let data = await room.participants();
 
@@ -83,8 +102,11 @@ export default class RoomController {
   }
 
   static async join(req, res) {
+    if (!(await can(req.user, ["sudo", "super-room", "create-participants"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
-      let room = await Room.find(req.body.room);
+      let room = await Room.findOrFail(req.body.room);
 
       let user = req.user;
 
@@ -99,8 +121,11 @@ export default class RoomController {
   }
 
   static async quit(req, res) {
+    if (!(await can(req.user, ["sudo", "super-room", "delete-participants"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
-      let room = await Room.find(req.params.code);
+      let room = await Room.findOrFail(req.params.code);
 
       let user = req.user;
 
@@ -115,8 +140,11 @@ export default class RoomController {
   }
 
   static async removeParticipant(req, res) {
+    if (!(await can(req.user, ["sudo", "super-room", "delete-participants"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
-      let room = await Room.find(req.params.code);
+      let room = await Room.findOrFail(req.params.code);
 
       let data = room.removeParticipant(req.body.user);
 
@@ -128,8 +156,11 @@ export default class RoomController {
   }
 
   static async quizzes(req, res) {
+    if (!(await can(req.user, ["sudo", "read-room", "read-participants"])))
+      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+
     try {
-      let room = await Room.find(req.params.code);
+      let room = await Room.findOrFail(req.params.code);
 
       let data = await room.quizzes();
 
