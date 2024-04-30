@@ -1,6 +1,8 @@
 import randomString from "../../helpers/randomString.js";
 import db from "./../../config/connection.js";
 import moment from "moment";
+import User from "./User.js";
+import Quiz from "./Quiz.js";
 
 export default class Room {
   constructor(data = {}) {
@@ -49,16 +51,22 @@ export default class Room {
         return new Room(results[0]);
       }
 
-      return results[0];
+      return null;
     } catch (error) {
       throw error;
     }
   }
 
   static async whereAll(criteria) {
-    const conditions = Object.entries(criteria).map(
-      ([column, value]) => `${column} = '${value}'`
-    );
+    const conditions = Object.entries(criteria).map(([column, value]) => {
+      if (value === "null") {
+        return `${column} IS NULL`;
+      } else if (value === "notnull") {
+        return `${column} IS NOT NULL`;
+      } else {
+        return `${column} = '${value}'`;
+      }
+    });
 
     const query = `SELECT * FROM rooms WHERE ${conditions.join(" AND ")}`;
 
@@ -76,9 +84,15 @@ export default class Room {
   }
 
   static async whereFirst(criteria) {
-    const conditions = Object.entries(criteria).map(
-      ([column, value]) => `${column} = '${value}'`
-    );
+    const conditions = Object.entries(criteria).map(([column, value]) => {
+      if (value === "null") {
+        return `${column} IS NULL`;
+      } else if (value === "notnull") {
+        return `${column} IS NOT NULL`;
+      } else {
+        return `${column} = '${value}'`;
+      }
+    });
 
     const query = `SELECT * FROM rooms WHERE ${conditions.join(" AND ")}`;
 
@@ -149,19 +163,22 @@ export default class Room {
   }
 
   async master() {
-    let query = `
-    SELECT users.id, users.fullname, users.username, users.email, users.created_at, users.updated_at
-    FROM users
-    JOIN rooms
-    ON rooms.room_master = users.id
-    WHERE rooms.code = '${this.code}'
-    `;
+    // let query = `
+    // SELECT users.id, users.fullname, users.username, users.email, users.created_at, users.updated_at
+    // FROM users
+    // JOIN rooms
+    // ON rooms.room_master = users.id
+    // WHERE rooms.code = '${this.code}'
+    // `;
 
     try {
-      let [results, fields] = await db.query(query);
+      // let [results, fields] = await db.query(query);
 
-      this._master = results[0];
-      return results;
+      let _master = await User.find(this.room_master);
+
+      this._master = _master;
+
+      return _master;
     } catch (error) {
       throw error;
     }
@@ -181,7 +198,16 @@ export default class Room {
     try {
       let [results, fields] = await db.query(query);
 
-      this._participants = results;
+      let _participants = [];
+
+      for (const result of results) {
+        let role = await Permission.find(result.id);
+        _participants.push(role);
+      }
+
+      this._participants = _participants;
+
+      return _participants;
       return results;
     } catch (error) {
       throw error;
@@ -246,9 +272,11 @@ export default class Room {
     try {
       let [results, fields] = await db.query(query);
 
-      this._quiizes = results;
+      let _quizzes = await Quiz.whereAll({ room_code: this.code });
 
-      return results;
+      this._quizzes = _quizzes;
+
+      return _quizzes;
     } catch (error) {
       throw error;
     }

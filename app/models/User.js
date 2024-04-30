@@ -1,5 +1,9 @@
 import db from "./../../config/connection.js";
 import moment from "moment";
+import Role from "./Role.js";
+import Permission from "./Permission.js";
+import Quiz from "./Quiz.js";
+import Room from "./Room.js";
 import Attempt from "./Attempt.js";
 
 export default class User {
@@ -40,16 +44,38 @@ export default class User {
         return new User(results[0]);
       }
 
-      return results[0];
+      return null;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async findOrFail(id) {
+    let query = `SELECT * FROM users WHERE id = ${id}`;
+
+    try {
+      const [results, fields] = await db.query(query);
+
+      if (results[0]) {
+        return new User(results[0]);
+      }
+
+      throw new Error(`tidak dapat menemukan user dengan id ${id}`);
     } catch (error) {
       throw error;
     }
   }
 
   static async whereAll(criteria) {
-    const conditions = Object.entries(criteria).map(
-      ([column, value]) => `${column} = '${value}'`
-    );
+    const conditions = Object.entries(criteria).map(([column, value]) => {
+      if (value === "null") {
+        return `${column} IS NULL`;
+      } else if (value === "notnull") {
+        return `${column} IS NOT NULL`;
+      } else {
+        return `${column} = '${value}'`;
+      }
+    });
 
     const query = `SELECT * FROM users WHERE ${conditions.join(" AND ")}`;
     try {
@@ -66,9 +92,15 @@ export default class User {
   }
 
   static async whereFirst(criteria) {
-    const conditions = Object.entries(criteria).map(
-      ([column, value]) => `${column} = '${value}'`
-    );
+    const conditions = Object.entries(criteria).map(([column, value]) => {
+      if (value === "null") {
+        return `${column} IS NULL`;
+      } else if (value === "notnull") {
+        return `${column} IS NOT NULL`;
+      } else {
+        return `${column} = '${value}'`;
+      }
+    });
 
     const query = `SELECT * FROM users WHERE ${conditions.join(" AND ")}`;
     try {
@@ -78,7 +110,11 @@ export default class User {
         return new User(result);
       });
 
-      return users[0];
+      if (users[0]) {
+        return users[0];
+      }
+
+      return null;
     } catch (error) {
       throw error;
     }
@@ -136,7 +172,7 @@ export default class User {
 
   async roles() {
     let query = `
-      SELECT roles.id, roles.name, roles.display_name, roles.created_at, roles.updated_at 
+      SELECT roles.* 
       FROM roles 
       JOIN user_roles
       ON roles.id = user_roles.role_id
@@ -146,9 +182,16 @@ export default class User {
     try {
       let [results, fields] = await db.query(query);
 
-      this._roles = results;
+      let _roles = [];
 
-      return results;
+      for (const result of results) {
+        let role = await Role.find(result.id);
+        _roles.push(role);
+      }
+
+      this._roles = _roles;
+
+      return _roles;
     } catch (error) {
       throw error;
     }
@@ -165,7 +208,7 @@ export default class User {
     );
 
     if (new_role_ids.length === 0) {
-      return "Role sudah tersedia"; // Tidak ada role baru yang perlu ditambahkan
+      return "Role sudah tersedia";
     }
 
     const values = new_role_ids.map((role_id) => [
@@ -203,50 +246,39 @@ export default class User {
     }
   }
 
-  // async hasRoles(roles = []) {
-  //   const escapedRoles = roles.map((role) => connection.escape(role));
+  async hasRoles(roles = []) {
+    try {
+      let _roles = await this.roles();
 
-  //   let query = `
-  //       SELECT COUNT(*)
-  //       FROM roles
-  //       JOIN user_roles
-  //       ON user_roles.role_id = roles.id
-  //       WHERE user_roles.user_id = ${this.id}
-  //       AND roles.name IN (${escapedRoles.join(",")})
-  //   `;
+      let hasRole = _roles.some((role) => roles.includes(role.name));
 
-  //   try {
-  //     let result = new Promise((resolve, reject) => {
-  //       connection.query(query, (err, result) => {
-  //         if (err) reject(err);
-  //         resolve(result);
-  //       });
-  //     });
-
-  //     if (result < 1) {
-  //       return false;
-  //     }
-
-  //     return true;
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+      return hasRole;
+    } catch (error) {
+      throw error;
+    }
+  }
 
   async permissions() {
     let query = `
-        SELECT permissions.id, permissions.name, permissions.display_name, permissions.created_at, permissions.updated_at
+        SELECT permissions.*
         FROM permissions
         JOIN user_permissions
         ON permissions.id = user_permissions.permission_id
         WHERE user_permissions.user_id = ${this.id}
       `;
-
     try {
       let [results, fields] = await db.query(query);
-      this._permissions = results;
 
-      return results;
+      let _permissions = [];
+
+      for (const result of results) {
+        let role = await Permission.find(result.id);
+        _permissions.push(role);
+      }
+
+      this._permissions = _permissions;
+
+      return _permissions;
     } catch (error) {
       throw error;
     }
@@ -302,52 +334,41 @@ export default class User {
     }
   }
 
-  // async hasPermissions(permissions = []) {
-  //   const escapedPermissions = permissions.map((permission) =>
-  //     connection.escape(permission)
-  //   );
+  async hasPermissions(permissions = []) {
+    try {
+      let hasUserPermission = false;
+      let hasRolePermission = false;
 
-  //   let query = `
-  //       SELECT COUNT(*)
-  //       FROM permissons
-  //       JOIN user_permissons
-  //       ON user_permissons.permission_id = permissons.id
-  //       WHERE user_permissons.user_id = ${this.id}
-  //       AND permissons.name IN (${escapedPermissions.join(",")})
-  //   `;
+      let _permissions = await this.permissions();
 
-  //   try {
-  //     let result = new Promise((resolve, reject) => {
-  //       connection.query(query, (err, result) => {
-  //         if (err) reject(err);
-  //         resolve(result);
-  //       });
-  //     });
+      if (_permissions) {
+        hasUserPermission = _permissions.some((permission) =>
+          permissions.includes(permission.name)
+        );
+      }
 
-  //     if (result < 1) {
-  //       return false;
-  //     }
+      let _roles = await this.roles();
 
-  //     return true;
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+      if (_roles) {
+        for (const role of _roles) {
+          hasRolePermission = await role.hasPermissions(permissions);
+          if (hasRolePermission) break;
+        }
+      }
+
+      return hasUserPermission || hasRolePermission;
+    } catch (error) {
+      throw error;
+    }
+  }
 
   async rooms() {
     try {
-      let query = `
-      SELECT rooms.code, rooms.room_master, rooms.name 
-      FROM rooms
-      JOIN users ON users.id = rooms.room_master
-      WHERE rooms.room_master = ${this.id}
-      `;
+      let _rooms = await Room.whereAll({ room_master: this.id });
 
-      let [results, fields] = await db.query(query);
+      this._rooms = _rooms;
 
-      this._rooms = results;
-
-      return results;
+      return _rooms;
     } catch (error) {
       throw error;
     }
@@ -355,32 +376,18 @@ export default class User {
 
   async quizzes() {
     try {
-      let query = `
-      SELECT quizzes.id, quizzes.title, quizzes.description, quizzes.difficulty, quizzes.created_at, quizzes.updated_at
-      FROM quizzes
-      INNER JOIN users ON users.id = quizzes.user_id
-      WHERE users.id = ${this.id}
-      `;
+      let _quizzes = await Quiz.whereAll({ user_id: this.id });
 
-      let [results, fields] = await db.query(query);
+      this._quizzes = _quizzes;
 
-      this._quizzes = results;
-
-      return results;
+      return _quizzes;
     } catch (error) {
       throw error;
     }
   }
 
   async attempts() {
-    // let query = `
-    //   SELECT * FROM attempts
-    //   WHERE attempts.user.id = ${this.id}
-    // `;
-
     try {
-      // let [results, fields] = await db.query(query);
-
       let _attempts = await Attempt.whereAll({ user_id: this.id });
 
       for (const attempt of _attempts) {

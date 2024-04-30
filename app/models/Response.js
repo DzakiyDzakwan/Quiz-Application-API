@@ -1,5 +1,9 @@
 import db from "./.././../config/connection.js";
 import moment from "moment";
+import Attempt from "./Attempt.js";
+import Question from "./Question.js";
+import User from "./User.js";
+import Answer from "./Answer.js";
 
 export default class Response {
   constructor(data = {}) {
@@ -37,7 +41,7 @@ export default class Response {
         return new Response(results[0]);
       }
 
-      return results[0];
+      return null;
     } catch (error) {
       throw error;
     }
@@ -142,60 +146,57 @@ export default class Response {
     }
   }
 
-  async quiz() {
-    let query = `
-        SELECT *
-        FROM quizzess
-        JOIN responses
-        ON quizzes.id = responses.quiz_id
-        WHERE responses.id = ${this.id}
-        `;
+  async attempt() {
+    // let query = `
+    //     SELECT *
+    //     FROM quizzess
+    //     JOIN responses
+    //     ON quizzes.id = responses.quiz_id
+    //     WHERE responses.id = ${this.id}
+    //     `;
 
     try {
-      let [results, fields] = await db.query(query);
+      // let [results, fields] = await db.query(query);
 
-      this._room = results[0];
-      return results;
+      let _attempt = await Attempt.find(this.attempt_id);
+
+      this._attempt = _attempt;
+
+      return _attempt;
     } catch (error) {
       throw error;
     }
   }
 
   async question() {
-    let query = `
-        SELECT *
-        FROM questions
-        JOIN responses
-        ON questions.id = responses.question_id
-        WHERE responses.id = ${this.id}
-        `;
+    // let query = `
+    //     SELECT *
+    //     FROM questions
+    //     JOIN responses
+    //     ON questions.id = responses.question_id
+    //     WHERE responses.id = ${this.id}
+    //     `;
 
     try {
-      let [results, fields] = await db.query(query);
+      // let [results, fields] = await db.query(query);
 
-      this._question = results[0];
-      return results;
+      let _question = await Question.find(this.question_id);
+
+      this._question = _question;
+
+      return _question;
     } catch (error) {
       throw error;
     }
   }
 
-  async user() {
-    let query = `
-        SELECT users.id, users.fullname, users.username, users.email
-        FROM users
-        JOIN attempts
-        ON users.id = attempts.user_id
-        JOIN responses
-        ON attempts.id = responses.attempt_id
-        WHERE responses.id = ${this.id}
-        `;
-
+  async answer() {
     try {
-      let [results, fields] = await db.query(query);
+      let _answer = await Answer.find(this.answer_id);
 
-      this._user = results[0];
-      return results;
+      this._answer = _answer;
+
+      return _answer;
     } catch (error) {
       throw error;
     }

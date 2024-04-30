@@ -1,6 +1,8 @@
 import db from "./../../config/connection.js";
 import moment from "moment";
 import Quiz from "./Quiz.js";
+import User from "./User.js";
+import Response from "./Response.js";
 
 export default class Attempt {
   constructor(data = {}) {
@@ -40,7 +42,7 @@ export default class Attempt {
         return new Attempt(results[0]);
       }
 
-      return results[0];
+      return null;
     } catch (error) {
       throw error;
     }
@@ -148,20 +150,23 @@ export default class Attempt {
   }
 
   async user() {
-    let query = `
-        SELECT users.id, users.fullname, users.username, users.email, users.password, users.created_at, users.updated_at
-        FROM users
-        JOIN attempts
-        ON users.id = attempts.user_id
-        WHERE attempts.id = ${this.id}
-        AND users.deleted_at IS NOT NULL
-        `;
+    // let query = `
+    //     SELECT users.id, users.fullname, users.username, users.email, users.password, users.created_at, users.updated_at
+    //     FROM users
+    //     JOIN attempts
+    //     ON users.id = attempts.user_id
+    //     WHERE attempts.id = ${this.id}
+    //     AND users.deleted_at IS NOT NULL
+    //     `;
 
     try {
-      let [results, fields] = await db.query(query);
+      // let [results, fields] = await db.query(query);
 
-      this._room = results[0];
-      return results;
+      let _user = await User.find(this.user_id);
+
+      this._user = _user;
+
+      return _user;
     } catch (error) {
       throw error;
     }
@@ -190,19 +195,22 @@ export default class Attempt {
   }
 
   async responses() {
-    let query = `
-      SELECT questions.content as question, answers.content as answer, answers.is_correct as is_correct
-      FROM responses
-      JOIN questions ON questions.id = responses.question_id
-      JOIN answers ON answers.id = responses.answer_id
-      WHERE responses.attempt_id = ${this.id}
-    `;
+    // let query = `
+    //   SELECT questions.content as question, answers.content as answer, answers.is_correct as is_correct
+    //   FROM responses
+    //   JOIN questions ON questions.id = responses.question_id
+    //   JOIN answers ON answers.id = responses.answer_id
+    //   WHERE responses.attempt_id = ${this.id}
+    // `;
 
     try {
-      let [results, fields] = await db.query(query);
+      // let [results, fields] = await db.query(query);
 
-      this._responses = results;
-      return results;
+      let responses = await Response.whereAll({ attempt_id: this.id });
+
+      this._responses = this._responses;
+
+      return this._responses;
     } catch (error) {
       throw error;
     }

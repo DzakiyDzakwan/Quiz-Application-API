@@ -1,6 +1,9 @@
 import db from "./../../config/connection.js";
 import moment from "moment";
 import Answer from "./Answer.js";
+import User from "./User.js";
+import Room from "./Room.js";
+import Question from "./Question.js";
 
 export default class Quiz {
   constructor(data = {}) {
@@ -42,7 +45,7 @@ export default class Quiz {
         return new Quiz(results[0]);
       }
 
-      return results[0];
+      return null;
     } catch (error) {
       throw error;
     }
@@ -153,62 +156,74 @@ export default class Quiz {
   }
 
   async creator() {
-    let query = `
-        SELECT users.id, users.fullname, users.username, users.email, users.created_at, users.updated_at
-        FROM users
-        JOIN quizzes
-        ON quizzes.user_id = users.id
-        WHERE quizzes.id = ${this.id}
-        `;
+    // let query = `
+    //     SELECT users.id, users.fullname, users.username, users.email, users.created_at, users.updated_at
+    //     FROM users
+    //     JOIN quizzes
+    //     ON quizzes.user_id = users.id
+    //     WHERE quizzes.id = ${this.id}
+    //     `;
 
     try {
-      let [results, fields] = await db.query(query);
+      // let [results, fields] = await db.query(query);
 
-      this._creator = results[0];
-      return results;
+      let _creator = await User.find(this.user_id);
+
+      this._creator = _creator;
+      return _creator;
     } catch (error) {
       throw error;
     }
   }
 
   async room() {
-    let query = `
-        SELECT rooms.code, rooms.room_master, rooms.name, rooms.created_at, rooms.updated_at
-        FROM rooms
-        JOIN quizzes
-        ON quizzes.room_code = rooms.code
-        WHERE quizzes.id = ${this.id}
-        `;
+    // let query = `
+    //     SELECT rooms.code, rooms.room_master, rooms.name, rooms.created_at, rooms.updated_at
+    //     FROM rooms
+    //     JOIN quizzes
+    //     ON quizzes.room_code = rooms.code
+    //     WHERE quizzes.id = ${this.id}
+    //     `;
 
     try {
-      let [results, fields] = await db.query(query);
+      // let [results, fields] = await db.query(query);
 
-      this._room = results[0];
-      return results;
+      let _room = await Room.find(this.room_code);
+
+      this._room = _room;
+
+      return _room;
     } catch (error) {
       throw error;
     }
   }
 
   async questions() {
-    let query = `
-        SELECT * FROM questions
-        WHERE quiz_id = ${this.id}
-        AND deleted_at IS NULL
-        ORDER BY questions.question_order
-        `;
+    // let query = `
+    //     SELECT * FROM questions
+    //     WHERE quiz_id = ${this.id}
+    //     AND deleted_at IS NULL
+    //     ORDER BY questions.question_order
+    //     `;
 
     try {
-      let [results, fields] = await db.query(query);
+      // let [results, fields] = await db.query(query);
 
-      let _questions = [];
+      // let _questions = [];
 
-      for (const result of results) {
-        let answers = await Answer.whereAll({ question_id: result.id });
-        _questions.push({ ...result, answers: answers });
+      // for (const result of results) {
+      //   let answers = await Answer.whereAll({ question_id: result.id });
+      //   _questions.push({ ...result, answers: answers });
+      // }
+
+      let _questions = await Question.whereAll({ quiz_id: this.id });
+
+      for (const question of _questions) {
+        await question.answers();
       }
 
       this._questions = _questions;
+
       return _questions;
     } catch (error) {
       throw error;

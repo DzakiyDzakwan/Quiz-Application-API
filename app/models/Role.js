@@ -59,9 +59,15 @@ export default class Role {
   }
 
   static async whereAll(criteria) {
-    const conditions = Object.entries(criteria).map(
-      ([column, value]) => `${column} = '${value}'`
-    );
+    const conditions = Object.entries(criteria).map(([column, value]) => {
+      if (value === "null") {
+        return `${column} IS NULL`;
+      } else if (value === "notnull") {
+        return `${column} IS NOT NULL`;
+      } else {
+        return `${column} = '${value}'`;
+      }
+    });
 
     const query = `SELECT * FROM roles WHERE ${conditions.join(" AND ")}`;
 
@@ -79,9 +85,15 @@ export default class Role {
   }
 
   static async whereFirst(criteria) {
-    const conditions = Object.entries(criteria).map(
-      ([column, value]) => `${column} = '${value}'`
-    );
+    const conditions = Object.entries(criteria).map(([column, value]) => {
+      if (value === "null") {
+        return `${column} IS NULL`;
+      } else if (value === "notnull") {
+        return `${column} IS NOT NULL`;
+      } else {
+        return `${column} = '${value}'`;
+      }
+    });
 
     const query = `SELECT * FROM roles WHERE ${conditions.join(" AND ")}`;
 
@@ -237,35 +249,15 @@ export default class Role {
     }
   }
 
-  // async hasPermissions(permissions = []) {
-  //   const escapedPermissions = permissions.map((permission) =>
-  //     connection.escape(permission)
-  //   );
+  async hasPermissions(permissions = []) {
+    try {
+      let _permissions = await this.permissions();
 
-  //   let query = `
-  //       SELECT COUNT(*)
-  //       FROM permissons
-  //       JOIN role_permissons
-  //       ON role_permissons.permission_id = permissons.id
-  //       WHERE role_permissons.role_id = ${this.id}
-  //       AND permissons.name IN (${escapedPermissions.join(",")})
-  //   `;
+      let hasPermission = _permissions.some((permission) =>
+        permissions.includes(permission.name)
+      );
 
-  //   try {
-  //     let result = new Promise((resolve, reject) => {
-  //       connection.query(query, (err, result) => {
-  //         if (err) reject(err);
-  //         resolve(result);
-  //       });
-  //     });
-
-  //     if (result < 1) {
-  //       return false;
-  //     }
-
-  //     return true;
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+      return hasPermission;
+    } catch (error) {}
+  }
 }

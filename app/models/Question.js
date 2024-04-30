@@ -1,5 +1,7 @@
 import db from "./.././../config/connection.js";
 import moment from "moment";
+import Quiz from "./Quiz.js";
+import Answer from "./Answer.js";
 
 export default class Question {
   constructor(data = {}) {
@@ -38,16 +40,22 @@ export default class Question {
         return new Question(results[0]);
       }
 
-      return results[0];
+      return null;
     } catch (error) {
       throw error;
     }
   }
 
   static async whereAll(criteria) {
-    const conditions = Object.entries(criteria).map(
-      ([column, value]) => `${column} = '${value}'`
-    );
+    const conditions = Object.entries(criteria).map(([column, value]) => {
+      if (value === "null") {
+        return `${column} IS NULL`;
+      } else if (value === "notnull") {
+        return `${column} IS NOT NULL`;
+      } else {
+        return `${column} = '${value}'`;
+      }
+    });
 
     const query = `SELECT * FROM questions WHERE ${conditions.join(" AND ")}`;
 
@@ -65,9 +73,15 @@ export default class Question {
   }
 
   static async whereFirst(criteria) {
-    const conditions = Object.entries(criteria).map(
-      ([column, value]) => `${column} = '${value}'`
-    );
+    const conditions = Object.entries(criteria).map(([column, value]) => {
+      if (value === "null") {
+        return `${column} IS NULL`;
+      } else if (value === "notnull") {
+        return `${column} IS NOT NULL`;
+      } else {
+        return `${column} = '${value}'`;
+      }
+    });
 
     const query = `SELECT * FROM questions WHERE ${conditions.join(" AND ")}`;
 
@@ -147,20 +161,22 @@ export default class Question {
   }
 
   async quiz() {
-    let query = `
-    SELECT quizzes.id, quizzes.user_id, quizzes.room_code, quizzes.title, quizzes.description, quizzes.difficulty, quizzes.created_at, quizzes.updated_at 
-    FROM quizzes
-    JOIN questions
-    ON quizzes.id = questions.quiz_id
-    WHERE questions.id = ${this.id}
-    `;
+    // let query = `
+    // SELECT quizzes.id, quizzes.user_id, quizzes.room_code, quizzes.title, quizzes.description, quizzes.difficulty, quizzes.created_at, quizzes.updated_at
+    // FROM quizzes
+    // JOIN questions
+    // ON quizzes.id = questions.quiz_id
+    // WHERE questions.id = ${this.id}
+    // `;
 
     try {
-      let [results, fields] = await db.query(query);
+      // let [results, fields] = await db.query(query);
 
-      this._quiz = results;
+      let _quiz = await Quiz.find(this.quiz_id);
 
-      return results;
+      this._quiz = _quiz;
+
+      return _quiz;
     } catch (error) {
       throw error;
     }
@@ -176,9 +192,14 @@ export default class Question {
     try {
       let [results, fields] = await db.query(query);
 
-      this._answers = results;
+      let _answers = await Answer.whereAll({
+        question_id: this.id,
+        deleted_at: "notnull",
+      });
 
-      return results;
+      this._answers = _answers;
+
+      return _answers;
     } catch (error) {
       throw error;
     }

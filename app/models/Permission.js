@@ -1,5 +1,7 @@
 import db from "./../../config/connection.js";
 import moment from "moment";
+import User from "./User.js";
+import Role from "./Role.js";
 
 export default class Permission {
   constructor(data = {}) {
@@ -58,9 +60,15 @@ export default class Permission {
   }
 
   static async whereAll(criteria) {
-    const conditions = Object.entries(criteria).map(
-      ([column, value]) => `${column} = '${value}'`
-    );
+    const conditions = Object.entries(criteria).map(([column, value]) => {
+      if (value === "null") {
+        return `${column} IS NULL`;
+      } else if (value === "notnull") {
+        return `${column} IS NOT NULL`;
+      } else {
+        return `${column} = '${value}'`;
+      }
+    });
 
     const query = `SELECT * FROM permissions WHERE ${conditions.join(" AND ")}`;
     try {
@@ -77,9 +85,15 @@ export default class Permission {
   }
 
   static async whereFirst(criteria) {
-    const conditions = Object.entries(criteria).map(
-      ([column, value]) => `${column} = '${value}'`
-    );
+    const conditions = Object.entries(criteria).map(([column, value]) => {
+      if (value === "null") {
+        return `${column} IS NULL`;
+      } else if (value === "notnull") {
+        return `${column} IS NOT NULL`;
+      } else {
+        return `${column} = '${value}'`;
+      }
+    });
 
     const query = `SELECT * FROM permissions WHERE ${conditions.join(" AND ")}`;
     try {
@@ -157,8 +171,15 @@ export default class Permission {
     try {
       let [results, fields] = await db.query(query);
 
-      this._users = results;
-      return results;
+      let _users = [];
+
+      for (const result of results) {
+        let user = await User.find(result.id);
+        _users.push(user);
+      }
+
+      this._users = _users;
+      return _users;
     } catch (error) {
       throw error;
     }
@@ -175,9 +196,14 @@ export default class Permission {
     try {
       let [results, fields] = await db.query(query);
 
-      this._roles = results;
+      let _roles = [];
 
-      return results;
+      for (const result of results) {
+        let user = await User.find(result.id);
+        _roles.push(user);
+      }
+
+      this._roles = _roles;
     } catch (error) {
       throw error;
     }

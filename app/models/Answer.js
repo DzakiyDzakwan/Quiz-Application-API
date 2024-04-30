@@ -1,5 +1,6 @@
 import db from "./.././../config/connection.js";
 import moment from "moment";
+import Question from "./Question.js";
 
 export default class Answer {
   constructor(data = {}) {
@@ -38,16 +39,22 @@ export default class Answer {
         return new Answer(results[0]);
       }
 
-      return results[0];
+      return null;
     } catch (error) {
       throw error;
     }
   }
 
   static async whereAll(criteria) {
-    const conditions = Object.entries(criteria).map(
-      ([column, value]) => `${column} = '${value}'`
-    );
+    const conditions = Object.entries(criteria).map(([column, value]) => {
+      if (value === "null") {
+        return `${column} IS NULL`;
+      } else if (value === "notnull") {
+        return `${column} IS NOT NULL`;
+      } else {
+        return `${column} = '${value}'`;
+      }
+    });
 
     const query = `SELECT * FROM answers WHERE ${conditions.join(" AND ")}`;
 
@@ -65,9 +72,15 @@ export default class Answer {
   }
 
   static async whereFirst(criteria) {
-    const conditions = Object.entries(criteria).map(
-      ([column, value]) => `${column} = '${value}'`
-    );
+    const conditions = Object.entries(criteria).map(([column, value]) => {
+      if (value === "null") {
+        return `${column} IS NULL`;
+      } else if (value === "notnull") {
+        return `${column} IS NOT NULL`;
+      } else {
+        return `${column} = '${value}'`;
+      }
+    });
 
     const query = `SELECT * FROM answers WHERE ${conditions.join(" AND ")}`;
 
@@ -148,20 +161,22 @@ export default class Answer {
   }
 
   async question() {
-    let query = `
-    SELECT questions.id, questions.quiz_id, questions.question_order, questions.content, questions.created_at, questions.updated_at, questions.deleted_at
-    FROM questions
-    JOIN answers
-    ON questions.id = answers.question_id
-    WHERE answers.id = ${this.id}
-    `;
+    // let query = `
+    // SELECT questions.id, questions.quiz_id, questions.question_order, questions.content, questions.created_at, questions.updated_at, questions.deleted_at
+    // FROM questions
+    // JOIN answers
+    // ON questions.id = answers.question_id
+    // WHERE answers.id = ${this.id}
+    // `;
 
     try {
-      let [results, fields] = await db.query(query);
+      // let [results, fields] = await db.query(query);
 
-      this._question = results;
+      let _question = await Question.find(this.question_id);
 
-      return results;
+      this._question = _question;
+
+      return _question;
     } catch (error) {
       throw error;
     }
