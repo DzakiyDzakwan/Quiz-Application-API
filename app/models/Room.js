@@ -217,8 +217,8 @@ export default class Room {
       let _participants = [];
 
       for (const result of results) {
-        let role = await Permission.find(result.id);
-        _participants.push(role);
+        let participant = await User.find(result.id);
+        _participants.push(participant);
       }
 
       this._participants = _participants;
@@ -242,7 +242,7 @@ export default class Room {
     );
 
     if (isExist) {
-      return "user sudah menjadi peserta ruangan";
+      throw new Error("user sudah menjadi peserta ruangan");
     }
 
     const values = [
