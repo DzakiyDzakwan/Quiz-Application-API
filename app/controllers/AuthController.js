@@ -26,7 +26,7 @@ export default class AuthController {
 
       // Login
       const token = jwt.sign({ user: user.id }, process.env.JWT_KEY, {
-        expiresIn: "1h",
+        expiresIn: "24h",
       }); // (payload, secretkey, expiredTime)
 
       return res.status(200).send({ message: "login berhasil", token: token });

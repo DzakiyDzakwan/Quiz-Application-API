@@ -9,30 +9,33 @@ export default class RoleSeeder {
       {
         name: "super",
         display_name: "Super Administrator",
-        permissions: [{ name: "sudo", display_name: "Super Permission" }],
+        permissions: ["sudo"],
       },
       {
         name: "admin",
         display_name: "Administrator",
         permissions: [
-          { name: "read-user", display_name: "Read User" },
-          { name: "read-room", display_name: "Read Room" },
-          { name: "read-quiz", display_name: "Read Quiz" },
+          "read-user",
+          "read-room",
+          "read-participant",
+          "read-quiz",
+          "read-question",
+          "read-answer",
+          "read-attempt",
+          "read-response",
         ],
       },
       {
         name: "user",
         display_name: "User",
         permissions: [
-          { name: "read-room", display_name: "Read Room" },
-          { name: "create-room", display_name: "Create Room" },
-          { name: "update-room", display_name: "Update Room" },
-          { name: "delete-room", display_name: "Delete Room" },
-
-          { name: "read-quiz", display_name: "Read Quiz" },
-          { name: "create-quiz", display_name: "Create Quiz" },
-          { name: "update-quiz", display_name: "Update Quiz" },
-          { name: "delete-quiz", display_name: "Delete Quiz" },
+          "super-room",
+          "super-participant",
+          "super-quiz",
+          "super-question",
+          "super-answer",
+          "super-attempt",
+          "super-response",
         ],
       },
     ];
@@ -44,24 +47,22 @@ export default class RoleSeeder {
           display_name: role.display_name,
         };
 
-        let new_role = await Role.whereFirst({ name: data.name });
+        let _role = await Role.whereFirst({ name: data.name });
 
-        if (!new_role) {
-          new_role = await Role.create(data);
+        if (!_role) {
+          _role = await Role.create(data);
         } else {
-          new_role = await new_role.update(data);
+          _role = await _role.update(data);
         }
 
         for (const permission of role.permissions) {
-          let p = await Permission.whereFirst({ name: permission.name });
+          let _permission = await Permission.whereFirst({ name: permission });
 
-          if (!p) {
-            p = await Permission.create(permission);
-          } else {
-            p = await p.update(permission);
+          if (!_permission) {
+            _permission = await Permission.create({ name: permission });
           }
 
-          new_role.attachPermissions([p.id]);
+          _role.attachPermissions([_permission.id]);
         }
       }
     } catch (error) {

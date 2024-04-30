@@ -13,7 +13,7 @@ export default class UserSeeder {
         username: "supertesting",
         email: "super@gmail.com",
         password: "super12345",
-        roles: [{ name: "super" }],
+        roles: ["super"],
         permissions: [],
       },
       {
@@ -21,7 +21,7 @@ export default class UserSeeder {
         username: "admintesting01",
         email: "admintesting01@gmail.com",
         password: "admintest12345",
-        roles: [{ name: "admin" }, { name: "user" }],
+        roles: ["admin"],
         permissions: [],
       },
       {
@@ -29,7 +29,7 @@ export default class UserSeeder {
         username: "usertesting01",
         email: "usertesting01@gmail.com",
         password: "usertest0112345",
-        roles: [{ name: "user" }],
+        roles: ["user"],
         permissions: [],
       },
       {
@@ -37,7 +37,7 @@ export default class UserSeeder {
         username: "usertesting02",
         email: "usertesting02@gmail.com",
         password: "usertest0212345",
-        roles: [{ name: "user" }],
+        roles: ["user"],
         permissions: [],
       },
       {
@@ -45,7 +45,7 @@ export default class UserSeeder {
         username: "usertesting03",
         email: "usertesting03@gmail.com",
         password: "usertest0312345",
-        roles: [{ name: "user" }],
+        roles: ["user"],
         permissions: [],
       },
       {
@@ -53,7 +53,7 @@ export default class UserSeeder {
         username: "usertesting04",
         email: "usertesting04@gmail.com",
         password: "usertest0412345",
-        roles: [{ name: "user" }],
+        roles: ["user"],
         permissions: [],
       },
       {
@@ -61,7 +61,7 @@ export default class UserSeeder {
         username: "usertesting05",
         email: "usertesting05@gmail.com",
         password: "usertest0512345",
-        roles: [{ name: "user" }],
+        roles: ["user"],
         permissions: [],
       },
     ];
@@ -75,39 +75,35 @@ export default class UserSeeder {
           password: await bcrypt.hash(user.password, 8),
         };
 
-        let new_user = await User.whereFirst({
+        let _user = await User.whereFirst({
           username: user.username,
           email: user.email,
         });
 
-        if (!new_user) {
-          new_user = await User.create(data);
+        if (!_user) {
+          _user = await User.create(data);
         } else {
-          new_user = await new_user.update(data);
+          _user = await _user.update(data);
         }
 
         for (const role of user.roles) {
-          let r = await Role.whereFirst({ name: role.name });
+          let _role = await Role.whereFirst({ name: role });
 
-          if (!r) {
-            r = await Role.create(role);
-          } else {
-            r = await r.update(role);
+          if (!_role) {
+            _role = await Role.create({ name: role });
           }
 
-          new_user.attachRoles([r.id]);
+          _user.attachRoles([_role.id]);
         }
 
         for (const permission of user.permissions) {
-          let p = await Permission.whereFirst({ name: permission.name });
+          let _permission = await Permission.whereFirst({ name: permission });
 
-          if (!p) {
-            p = await Permission.create(permission);
-          } else {
-            p = await p.update(p);
+          if (!_permission) {
+            _permission = await Permission.create({ name: permission });
           }
 
-          new_user.attachPermissions([p.id]);
+          _user.attachPermissions([_permission.id]);
         }
       }
     } catch (error) {

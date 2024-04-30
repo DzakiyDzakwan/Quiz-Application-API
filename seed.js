@@ -1,5 +1,6 @@
 import db from "./config/connection.js";
 
+import PermissionSeeder from "./databases/seeders/PermissionSeeder.js";
 import RoleSeeder from "./databases/seeders/RoleSeeder.js";
 import RoomSeeder from "./databases/seeders/RoomSeeder.js";
 import UserSeeder from "./databases/seeders/UserSeeder.js";
@@ -20,6 +21,7 @@ const seed = async () => {
     await Database.table("roles").truncate();
     await Database.table("permissions").truncate();
 
+    await PermissionSeeder.run();
     await RoleSeeder.run();
     await UserSeeder.run();
     await RoomSeeder.run();
