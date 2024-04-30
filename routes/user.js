@@ -16,12 +16,14 @@ import sudo from "../app/middlewares/SuperMiddleware.js";
 const router = Router();
 router.use(auth);
 router.get("/", admin, UserController.index);
+router.get(/inactive/, admin, UserController.trash);
 router.get("/:id", admin, UserController.show);
 
 router.use(sudo);
 router.post("/", store(), validate, UserController.store);
 router.put("/:id/update", update(), validate, UserController.update);
-router.delete("/:id/delete", UserController.destroy);
+router.delete("/:id/delete", UserController.softdelete);
+router.delete("/:id/destroy", UserController.destroy);
 
 router.get("/:id/roles", UserController.roles);
 router.post(

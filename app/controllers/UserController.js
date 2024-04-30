@@ -1,13 +1,33 @@
 import User from "../models/User.js";
+import bcrypt from "bcrypt";
 import can from "../../helpers/can.js";
 
 export default class UserController {
   static async index(req, res) {
     try {
-      if (!(await can(req.user, ["sudo", "super-user", "read-user"])))
-        throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+      if (!(await can(req.user, ["sudo", "super-user", "read-user"]))) {
+        return res
+          .status(403)
+          .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+      }
 
-      let data = await User.all();
+      let data = await User.whereAll({ deleted_at: "null" });
+
+      return res.status(200).send(data);
+    } catch (error) {
+      return res.status(400).send({ errors: error.message });
+    }
+  }
+
+  static async trash(req, res) {
+    try {
+      if (!(await can(req.user, ["sudo", "super-user", "read-user"]))) {
+        return res
+          .status(403)
+          .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+      }
+
+      let data = await User.whereAll({ deleted_at: "notnull" });
 
       return res.status(200).send(data);
     } catch (error) {
@@ -17,8 +37,11 @@ export default class UserController {
 
   static async show(req, res) {
     try {
-      if (!(await can(req.user, ["sudo", "super-user", "read-user"])))
-        throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+      if (!(await can(req.user, ["sudo", "super-user", "read-user"]))) {
+        return res
+          .status(403)
+          .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+      }
 
       let id = parseInt(req.params.id);
 
@@ -28,6 +51,7 @@ export default class UserController {
       await data.permissions();
       await data.rooms();
       await data.quizzes();
+      await data.attempts();
 
       return res.status(200).send(data);
     } catch (error) {
@@ -37,10 +61,20 @@ export default class UserController {
 
   static async store(req, res) {
     try {
-      if (!(await can(req.user, ["sudo", "super-user", "create-user"])))
-        throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+      if (!(await can(req.user, ["sudo", "super-user", "create-user"]))) {
+        return res
+          .status(403)
+          .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+      }
 
-      let data = await User.create(req.body);
+      let payload = {
+        fullname: req.body.fullname,
+        username: req.body.username,
+        email: req.body.email,
+        password: await bcrypt.hash(req.body.password, 8),
+      };
+
+      let data = await User.create(payload);
 
       return res
         .status(201)
@@ -52,18 +86,21 @@ export default class UserController {
 
   static async update(req, res) {
     try {
-      if (!(await can(req.user, ["sudo", "super-user", "update-user"])))
-        throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+      if (!(await can(req.user, ["sudo", "super-user", "update-user"]))) {
+        return res
+          .status(403)
+          .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+      }
 
       let id = parseInt(req.params.id);
       let user = await User.findOrFail(id);
 
       let payload = {
-        fullname: body.fullname,
-        username: body.username,
+        fullname: req.body.fullname,
+        username: req.body.username,
       };
 
-      let data = await user.update(req.body);
+      let data = await user.update(payload);
 
       return res
         .status(201)
@@ -73,15 +110,18 @@ export default class UserController {
     }
   }
 
-  static async destroy(req, res) {
+  static async softdelete(req, res) {
     try {
-      if (!(await can(req.user, ["sudo", "super-user", "delete-user"])))
-        throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+      if (!(await can(req.user, ["sudo", "super-user", "delete-user"]))) {
+        return res
+          .status(403)
+          .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+      }
 
       let id = parseInt(req.params.id);
       let user = await User.findOrFail(id);
 
-      let data = await user.delete();
+      let data = await user.softDelete();
 
       return res.status(200).send({ message: "berhasil menghapus user" });
     } catch (error) {
@@ -89,10 +129,34 @@ export default class UserController {
     }
   }
 
+  static async destroy(req, res) {
+    try {
+      if (!(await can(req.user, ["sudo", "super-user", "delete-user"]))) {
+        return res
+          .status(403)
+          .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+      }
+
+      let id = parseInt(req.params.id);
+      let user = await User.findOrFail(id);
+
+      let data = await user.delete();
+
+      return res
+        .status(204)
+        .send({ message: "berhasil menghapus permanen user" });
+    } catch (error) {
+      return res.status(400).send({ errors: error.message });
+    }
+  }
+
   static async roles(req, res) {
     try {
-      if (!(await can(req.user, ["sudo", "super-user", "read-user"])))
-        throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+      if (!(await can(req.user, ["sudo", "super-user", "read-user"]))) {
+        return res
+          .status(403)
+          .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+      }
 
       let id = parseInt(req.params.id);
       let user = await User.findOrFail(id);
@@ -106,8 +170,11 @@ export default class UserController {
   }
 
   static async attachRole(req, res) {
-    if (!(await can(req.user, ["sudo", "super-user", "update-user"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-user", "update-user"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
 
     let id = parseInt(req.params.id);
     try {
@@ -124,8 +191,11 @@ export default class UserController {
   }
 
   static async detachRole(req, res) {
-    if (!(await can(req.user, ["sudo", "super-user", "update-user"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-user", "update-user"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
 
     let id = parseInt(req.params.id);
     try {
@@ -141,8 +211,11 @@ export default class UserController {
   }
 
   static async permissions(req, res) {
-    if (!(await can(req.user, ["sudo", "super-user", "read-user"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-user", "read-user"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
 
     let id = parseInt(req.params.id);
     try {
@@ -157,8 +230,11 @@ export default class UserController {
   }
 
   static async attachPermission(req, res) {
-    if (!(await can(req.user, ["sudo", "super-user", "update-user"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-user", "update-user"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
 
     let id = parseInt(req.params.id);
     try {
@@ -175,8 +251,11 @@ export default class UserController {
   }
 
   static async detachPermission(req, res) {
-    if (!(await can(req.user, ["sudo", "super-user", "update-user"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-user", "update-user"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
 
     let id = parseInt(req.params.id);
     try {
@@ -193,8 +272,11 @@ export default class UserController {
   }
 
   static async rooms() {
-    if (!(await can(req.user, ["sudo", "super-user", "read-user"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-user", "read-user"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
 
     try {
       let id = parseInt(req.params.id);
@@ -209,8 +291,11 @@ export default class UserController {
   }
 
   static async quizzes() {
-    if (!(await can(req.user, ["sudo", "super-user", "read-user"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-user", "read-user"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
 
     try {
       let id = parseInt(req.params.id);

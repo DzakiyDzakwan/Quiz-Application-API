@@ -59,7 +59,7 @@ export default class ProfileController {
       let user = req.user;
 
       let data = await Attempt.whereAll({
-        user_id: this.id,
+        user_id: user.id,
         finished_at: "notnull",
       });
 

@@ -170,6 +170,20 @@ export default class User {
     }
   }
 
+  async softDelete() {
+    let query = `UPDATE users SET deleted_at = ? WHERE id = ${this.id}`;
+    try {
+      let [results, fields] = await db.query(
+        query,
+        moment().utc().format("YYYY-MM-DD HH:mm:ss")
+      );
+
+      return results;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async roles() {
     let query = `
       SELECT roles.* 
