@@ -56,13 +56,109 @@ Project ini dikembangkan menggunakan [ExpressJS](https://expressjs.com/) sebagai
 
 # Features
 
+# Endpoints
+
 1. Autentikasi
-2. Role Base Acces Controller ( RBAC )
-3. Pengelolaan Kuis
-4. Pengelolaan Pertanyaan Kuis
-5. Pengelolaan Jawaban Pertanyaan Kuis
-6. Pengelolaan Peserta Kuis
-7. Kuis Leaderboard
+   | No | Deskripsi | Endpoint | auth |
+   | :--| :---------| :--------| :----|
+   | 1 | Mendaftarkan akun baru kedalam sistem | `http://localhost:3333/api/v1/auth/register` | `false`|
+   | 2 | Masuk ke sistem dengan akun yang sudah terdaftar | `http://localhost:3333/api/v1/auth/login` | `false`|
+
+2. Pengelolaan Profile
+   | No | Deskripsi | Endpoint | auth |
+   | :--| :---------| :--------| :----|
+   | 1 | Melihat profil akun yang login | `` | `false`|
+| 2 | Memperbarui profil akun yang login | `` | `false`|
+   | 3 | Melihat ruangan yang dimiliki akun yang login | `` | `false`|
+| 4 | Melihat kuis yang dibuat akun yang login | `` | `false`|
+   | 5 | Melihat percobaan kuis yang sudah diselesaikan akun yang login | `` | `false`|
+| 6 | Menonaktifkan akun yang login | `` | `false`|
+
+3. Pengelolaan User
+   | No | Deskripsi | Endpoint | auth |
+   | :--| :---------| :--------| :----|
+   | 1 | Melihat seluruh user aktif yang ada didalam sistem | `` | `false`|
+| 2 | Melihat seluruh user inaktif yang ada didalam sistem | `` | `false`|
+   | 3 | Melihat detail user berdasarkan id user yang dipilih | `` | `false`|
+| 4 | Menambahkan user baru | `` | `false`|
+   | 5 | Memperbarui data user berdasarkan id user yang dipilih | `` | `false`|
+| 6 | Menonaktifkan user berdasarkan id user yang dipilih | `` | `false`|
+   | 7 | Menghapus permanen user berdasarkan id user yang dipilih | `` | `false`|
+| 8 | Menambahkan role user | `` | `false`|
+   | 9 | Menghapus role user | `` | `false`|
+| 10 | Menambahkan hak akses user | `` | `false`|
+   | 11 | Menghapus hak akses user | ``|`false`|
+
+4. Pengelolaan Role
+   | No | Deskripsi | Endpoint | auth |
+   | :--| :---------| :--------| :----|
+   | 1 | Melihat seluruh role yang ada didalam sistem | `` | `false`|
+| 2 | Melihat detail role berdasarkan id role yang dipilih | `` | `false`|
+   | 3 | Menambahkan role baru | `` | `false`|
+| 4 | Memperbarui data role berdasarkan id role yang dipilih | `` | `false`|
+   | 5 | Menghapus permanen role berdasarkan id role yang dipilih | `` | `false`|
+| 6 | Menambahkan hak akses role | `` | `false`|
+   | 7 | Menghapus hak akses role | ``|`false`|
+
+5. Pengelolaan Hak Akses
+   | No | Deskripsi | Endpoint | auth |
+   | :--| :---------| :--------| :----|
+   | 1 | Melihat seluruh hak akses yang ada didalam sistem | `` | `false`|
+| 2 | Melihat detail hak akses berdasarkan id hak akses yang dipilih | `` | `false`|
+   | 3 | Menambahkan hak akses baru | `` | `false`|
+| 4 | Memperbarui data hak akses berdasarkan id hak akses yang dipilih | `` | `false`|
+   | 5 | Menghapus permanen hak akses berdasarkan id hak akses yang dipilih | ``|`false`|
+
+6. Pengelolaan Ruangan
+   | No | Deskripsi | Endpoint | auth |
+   | :--| :---------| :--------| :----|
+   | 1 | Melihat seluruh ruangan yang ada didalam sistem | `` | `false`|
+| 2 | Melihat detail ruangan berdasarkan kode ruangan yang dipilih | `` | `false`|
+   | 3 | Menambahkan ruangan baru | `` | `false`|
+| 4 | Memperbarui data ruangan berdasarkan kode ruangan yang dipilih | `` | `false`|
+   | 5 | Menghapus permanen ruangan berdasarkan kode ruangan yang dipilih | `` | `false`|
+| 6 | Melihat seluruh kuis yang ada ada didalam ruangan berdasarkan kode ruangan yang dipilih | `` | `false`|
+
+7. Pengelolaan Peserta Ruangan
+   | No | Deskripsi | Endpoint | auth |
+   | :--| :---------| :--------| :----|
+   | 1 | Bergabung dengan ruangan berdasarkan kode ruangan yang dimasukan | `` | `false`|
+| 2 | Keluar ruangan berdasarkan kode ruangan yang dipilih | `` | `false`|
+   | 3 | Keluar ruangan berdasarkan kode ruangan yang dipilih | `` | `false`|
+| 4 | Melihat Leaderboard peserta ruangan berdasarkan kode ruangan yang dipilih | `` | `false`|
+
+8. Pengelolaan Kuis
+   | No | Deskripsi | Endpoint | auth |
+   | :--| :---------| :--------| :----|
+   | 1 | Melihat seluruh kuis yang ada didalam sistem | `` | `false`|
+| 1 | Melihat seluruh kuis publik yang ada didalam sistem | `` | `false`|
+   | 2 | Melihat detail kuis berdasarkan id kuis yang dipilih | `` | `false`|
+| 3 | Menambahkan kuis baru | `` | `false`|
+   | 4 | Memperbarui data kuis berdasarkan id kuis yang dipilih | `` | `false`|
+| 5 | Menghapus permanen kuis berdasarkan id kuis yang dipilih | `` | `false`|
+   | 6 | Menambahkan pertanyaan Kuis | `` | `false`|
+| 7 | Melihat seluruh percobaan yang dilakukan kuis berdasarkan id kuis yang dipilih | `` | `false`|
+   | 8 | Melihat percobaan kuis akun yang login | `` | `false`|
+| 9 | Melihat Leaderboard kuis berdasarkan id kuis yang dipilih | `` | `false`|
+
+9. Pengelolaan Pertanyaan Kuis
+   | No | Deskripsi | Endpoint | auth |
+   | :--| :---------| :--------| :----|
+   | 1 | Memperbarui data pertanyaan berdasarkan id pertanyaan yang dipilih | `` | `false`|
+| 2 | Menghapus pertanyaan kuis | `` | `false`|
+
+10. Pengelolaan Jawaban Pertanyaan Kuis
+    | No | Deskripsi | Endpoint | auth |
+    | :--| :---------| :--------| :----|
+    | 1 | Memperbarui data jawaban pertanyaan berdasarkan id jawaban pertanyaan yang dipilih | `` | `false`|
+| 2 | Menghapus jawaban pertanyaan kuis | `` | `false`|
+
+11. Pengelolaan Percobaan Kuis
+    | No | Deskripsi | Endpoint | auth |
+    | :--| :---------| :--------| :----|
+    | 1 | Melihat detail percobaan kuis berdasarkan id percobaan yang dipilih | `` | `false`|
+| 2 | Mulai mengerjakan kuis | `` | `false`|
+    | 3 | Selesai mengerjakan kuis | ``|`false`|
 
 # Contact Me
 
