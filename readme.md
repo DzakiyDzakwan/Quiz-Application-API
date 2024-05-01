@@ -125,12 +125,11 @@ Project ini dikembangkan menggunakan [ExpressJS](https://expressjs.com/) sebagai
 
 ## Pengelolaan Peserta Ruangan
 
-| No  | Deskripsi                                                                 | Endpoint | auth    |
-| :-- | :------------------------------------------------------------------------ | :------- | :------ |
-| 1   | Bergabung dengan ruangan berdasarkan kode ruangan yang dimasukan          | ``       | `false` |
-| 2   | Keluar ruangan berdasarkan kode ruangan yang dipilih                      | ``       | `false` |
-| 3   | Keluar ruangan berdasarkan kode ruangan yang dipilih                      | ``       | `false` |
-| 4   | Melihat Leaderboard peserta ruangan berdasarkan kode ruangan yang dipilih | ``       | `false` |
+| No  | Deskripsi                                                        | Endpoint | auth    |
+| :-- | :--------------------------------------------------------------- | :------- | :------ |
+| 1   | Bergabung dengan ruangan berdasarkan kode ruangan yang dimasukan | ``       | `false` |
+| 2   | Keluar ruangan berdasarkan kode ruangan yang dipilih             | ``       | `false` |
+| 3   | Keluar ruangan berdasarkan kode ruangan yang dipilih             | ``       | `false` |
 
 ## Pengelolaan Kuis
 
@@ -149,10 +148,11 @@ Project ini dikembangkan menggunakan [ExpressJS](https://expressjs.com/) sebagai
 
 ## Pengelolaan Pertanyaan Kuis
 
-| No  | Deskripsi                                                          | Endpoint | auth    |
-| :-- | :----------------------------------------------------------------- | :------- | :------ |
-| 1   | Memperbarui data pertanyaan berdasarkan id pertanyaan yang dipilih | ``       | `false` |
-| 2   | Menghapus pertanyaan kuis                                          | ``       | `false` |
+| No  | Deskripsi                                                               | Endpoint | auth    |
+| :-- | :---------------------------------------------------------------------- | :------- | :------ |
+| 1   | Memperbarui data pertanyaan berdasarkan id pertanyaan yang dipilih      | ``       | `false` |
+| 2   | Menghapus pertanyaan kuis berdasarka id pertanyaan yang dipilih         | ``       | `false` |
+| 3   | Menambah jawaban pertanyaan kuis berdasarkan id pertanyaan yang dipilih | ``       | `false` |
 
 ## Pengelolaan Jawaban Pertanyaan Kuis
 
@@ -167,7 +167,8 @@ Project ini dikembangkan menggunakan [ExpressJS](https://expressjs.com/) sebagai
 | :-- | :------------------------------------------------------------------ | :------- | :------ |
 | 1   | Melihat detail percobaan kuis berdasarkan id percobaan yang dipilih | ``       | `false` |
 | 2   | Mulai mengerjakan kuis                                              | ``       | `false` |
-| 3   | Selesai mengerjakan kuis                                            | ``       | `false` |
+| 3   | Berhenti sementara mengerjakan kuis                                 | ``       | `false` |
+| 4   | Selesai mengerjakan kuis                                            | ``       | `false` |
 
 # Contact Me
 

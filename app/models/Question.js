@@ -21,7 +21,7 @@ export default class Question {
       const [results, fields] = await db.query(query);
 
       let questions = results.map((result) => {
-        return new Room(result);
+        return new Question(result);
       });
 
       return questions;
@@ -177,17 +177,7 @@ export default class Question {
   }
 
   async quiz() {
-    // let query = `
-    // SELECT quizzes.id, quizzes.user_id, quizzes.room_code, quizzes.title, quizzes.description, quizzes.difficulty, quizzes.created_at, quizzes.updated_at
-    // FROM quizzes
-    // JOIN questions
-    // ON quizzes.id = questions.quiz_id
-    // WHERE questions.id = ${this.id}
-    // `;
-
     try {
-      // let [results, fields] = await db.query(query);
-
       let _quiz = await Quiz.find(this.quiz_id);
 
       this._quiz = _quiz;
@@ -199,18 +189,10 @@ export default class Question {
   }
 
   async answers() {
-    let query = `
-    SELECT * FROM answers
-    WHERE question_id = ${this.id}
-    AND deleted_at IS NULL
-    `;
-
     try {
-      let [results, fields] = await db.query(query);
-
       let _answers = await Answer.whereAll({
         question_id: this.id,
-        deleted_at: "notnull",
+        deleted_at: "null",
       });
 
       this._answers = _answers;

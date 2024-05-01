@@ -146,10 +146,10 @@ export default class QuizController {
         .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
     }
 
-    let quiz_id = parseInt(req.params.id);
+    let id = parseInt(req.params.id);
 
     let payload = {
-      quiz_id: quiz_id,
+      quiz_id: id,
       question_order: req.body.question_order,
       content: req.body.content,
     };

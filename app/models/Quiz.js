@@ -215,24 +215,11 @@ export default class Quiz {
   }
 
   async questions() {
-    // let query = `
-    //     SELECT * FROM questions
-    //     WHERE quiz_id = ${this.id}
-    //     AND deleted_at IS NULL
-    //     ORDER BY questions.question_order
-    //     `;
-
     try {
-      // let [results, fields] = await db.query(query);
-
-      // let _questions = [];
-
-      // for (const result of results) {
-      //   let answers = await Answer.whereAll({ question_id: result.id });
-      //   _questions.push({ ...result, answers: answers });
-      // }
-
-      let _questions = await Question.whereAll({ quiz_id: this.id });
+      let _questions = await Question.whereAll({
+        quiz_id: this.id,
+        deleted_at: "null",
+      });
 
       for (const question of _questions) {
         await question.answers();

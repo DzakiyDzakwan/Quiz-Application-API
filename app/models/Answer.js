@@ -133,13 +133,13 @@ export default class Answer {
   async update(data) {
     let payload = [
       data.content || this.content,
-      data.is_correct || this.is_correct,
+      data.is_correct ? true : false || this.is_correct,
       moment().utc().format("YYYY-MM-DD HH:mm:ss"),
     ];
 
     let query = `
-            UPDATE answers SET content = ?, is_correct = ?, updated_at = ? WHERE id = ${this.id}
-            `;
+      UPDATE answers SET content = ?, is_correct = ?, updated_at = ? WHERE id = ${this.id}
+      `;
 
     try {
       let [results, fields] = await db.query(query, payload);

@@ -52,6 +52,8 @@ const update = () => {
 const addQuestion = () => {
   return [
     body("question_order")
+      .notEmpty()
+      .withMessage("question_order tidak boleh kosong")
       .isInt()
       .withMessage("question_order harus berupa angka")
       .custom(async (value, { req }) => {
@@ -60,6 +62,7 @@ const addQuestion = () => {
         let question = await Question.whereFirst({
           quiz_id: quiz_id,
           question_order: value,
+          deleted_at: "null",
         });
 
         if (question) throw new Error(`question_order ${value} sudah tersedia`);
@@ -72,7 +75,10 @@ const addQuestion = () => {
       .isArray()
       .withMessage("answers harus berupa array dan tidak boleh kosong")
       .custom((answers) => {
-        let correct_answer = answers.filter((answer) => answer.is_correct);
+        if (answers.length > 4)
+          throw new Error("jumlah jawaban tidak boleh lebih dari 4");
+
+        let correct_answer = answers.find((answer) => answer.is_correct);
 
         if (correct_answer.length > 1)
           throw new Error("hanya boleh satu jawaban yang benar");
