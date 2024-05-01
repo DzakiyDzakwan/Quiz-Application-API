@@ -127,7 +127,7 @@ export default class RoomController {
     }
 
     try {
-      let room = await Room.findOrFail(req.body.room);
+      let room = await Room.findOrFail(req.body.room_code);
 
       let participants = await room.participants();
 
@@ -187,7 +187,7 @@ export default class RoomController {
     try {
       let room = await Room.findOrFail(req.params.code);
 
-      let data = room.removeParticipant(req.body.user);
+      let data = room.removeParticipant(req.body.user_id);
 
       return res.status(200).send({ message: "berhasil menghapus peserta" });
     } catch (error) {
