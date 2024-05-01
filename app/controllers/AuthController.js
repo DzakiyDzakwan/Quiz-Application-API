@@ -10,6 +10,12 @@ export default class AuthController {
     try {
       let user = await User.whereFirst({ username: username });
 
+      if (user.deleted_at) {
+        return res
+          .status(403)
+          .send({ errors: "akun anda sudah dinonaktifkan" });
+      }
+
       // Validasi Password
       let isPasswordValid = await bcrypt.compare(password, user.password);
 

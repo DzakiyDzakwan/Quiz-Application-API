@@ -26,7 +26,7 @@ export default class Quiz {
       const [results, fields] = await db.query(query);
 
       let quizzes = results.map((result) => {
-        return new Room(result);
+        return new Quiz(result);
       });
 
       return quizzes;
@@ -255,8 +255,34 @@ export default class Quiz {
     JOIN users
     ON users.id = attempts.user_id
     WHERE attempts.quiz_id = ${this.id}
-    ORDER BY attempts.score;
         `;
+
+    try {
+      let [results, fields] = await db.query(query);
+
+      console.log(results);
+
+      this._attempts = results;
+
+      return results;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async leaderboards() {
+    let query = `
+    SELECT attempts.*
+    FROM attempts
+    JOIN (
+      SELECT user_id, quiz_id, MAX(score) AS highest_score
+      FROM attempts
+      GROUP BY user_id, quiz_id
+    ) AS highest_scores ON attempts.user_id = highest_scores.user_id
+      AND attempts.quiz_id = highest_scores.quiz_id
+      AND attempts.score = highest_scores.highest_score
+    ORDER BY attempts.quiz_id, attempts.score DESC;
+    `;
 
     try {
       let [results, fields] = await db.query(query);

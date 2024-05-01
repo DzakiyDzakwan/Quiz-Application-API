@@ -9,26 +9,47 @@ import moment from "moment";
 
 export default class QuizController {
   static async index(req, res) {
-    if (!(await can(req.user, ["sudo", "super-quiz", "read-quiz"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-quiz", "read-quiz"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
+
+    try {
+      let data = await Quiz.all();
+
+      return res.status(200).send(data);
+    } catch (error) {
+      return res.status(400).send({ errors: error.message });
+    }
+  }
+
+  static async public(req, res) {
+    if (!(await can(req.user, ["sudo", "super-quiz", "read-quiz"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
 
     try {
       let data = await Quiz.whereAll({ room_code: "null" });
 
       return res.status(200).send(data);
     } catch (error) {
-      console.log(error);
-      return res.status(400).send(error);
+      return res.status(400).send({ errors: error.message });
     }
   }
 
   static async show(req, res) {
-    if (!(await can(req.user, ["sudo", "super-quiz", "read-quiz"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-quiz", "read-quiz"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
 
     try {
       let id = parseInt(req.params.id);
-      let data = await Quiz.find(id);
+      let data = await Quiz.findOrFail(id);
 
       await data.creator();
       await data.room();
@@ -36,14 +57,16 @@ export default class QuizController {
 
       return res.status(200).send(data);
     } catch (error) {
-      console.log(error);
-      return res.status(400).send(error);
+      return res.status(400).send({ errors: error.message });
     }
   }
 
   static async store(req, res) {
-    if (!(await can(req.user, ["sudo", "super-quiz", "create-quiz"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-quiz", "create-quiz"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
 
     let payload = {
       user_id: req.user.id,
@@ -55,65 +78,73 @@ export default class QuizController {
 
       return res.status(201).send({ message: "create success", data });
     } catch (error) {
-      console.log(error);
-      return res.status(400).send(error);
+      return res.status(400).send({ errors: error.message });
     }
   }
 
   static async update(req, res) {
-    if (!(await can(req.user, ["sudo", "super-quiz", "update-quiz"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-quiz", "update-quiz"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
 
     try {
       let id = parseInt(req.params.id);
-      let quiz = await Quiz.find(id);
+      let quiz = await Quiz.findOrFail(id);
 
       let data = await quiz.update(req.body);
 
       return res.status(201).send({ message: "update success", data });
     } catch (error) {
-      console.log(error);
-      return res.status(400).send(error);
+      return res.status(400).send({ errors: error.message });
     }
   }
 
   static async destroy(req, res) {
-    if (!(await can(req.user, ["sudo", "super-quiz", "delete-quiz"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-quiz", "delete-quiz"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
 
     try {
       let id = parseInt(req.params.id);
-      let quiz = await Quiz.find(id);
+      let quiz = await Quiz.findOrFail(id);
 
       let data = await quiz.delete();
 
       return res.status(200).send({ message: "delete success" });
     } catch (error) {
-      console.log(error);
-      return res.status(400).send(error);
+      return res.status(400).send({ errors: error.message });
     }
   }
 
   static async questions(req, res) {
-    if (!(await can(req.user, ["sudo", "super-question", "read-question"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-question", "read-question"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
 
     try {
       let id = parseInt(req.params.id);
-      let quiz = await Quiz.find(id);
+      let quiz = await Quiz.findOrFail(id);
 
       let data = await quiz.questions();
 
       return res.status(200).send(data);
     } catch (error) {
-      console.log(error);
-      return res.status(400).send(error);
+      return res.status(400).send({ errors: error.message });
     }
   }
 
   static async addQuestion(req, res) {
-    if (!(await can(req.user, ["sudo", "super-question", "create-question"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+    if (!(await can(req.user, ["sudo", "super-question", "create-question"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
 
     let quiz_id = parseInt(req.params.id);
 
@@ -137,36 +168,105 @@ export default class QuizController {
 
       return res.status(201).send({ message: "create success", data });
     } catch (error) {
-      console.log(error);
-      return res.status(400).send(error);
+      return res.status(400).send({ errors: error.message });
     }
   }
 
-  static async leaderboard(req, res) {
-    if (!(await can(req.user, ["sudo", "super-quiz", "read-quiz"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+  static async profileAttempt(req, res) {
+    let id = parseInt(req.params.id);
+
+    try {
+      let user = req.user;
+
+      let quiz = await Quiz.findOrFail(id);
+
+      let data = await Attempt.whereAll({ quiz_id: id, user_id: user.id });
+
+      return res.status(200).send(data);
+    } catch (error) {
+      return res.status(400).send({ errors: error.message });
+    }
+  }
+
+  static async attempts(req, res) {
+    if (!(await can(req.user, ["sudo", "super-quiz", "read-quiz"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
 
     let id = parseInt(req.params.id);
 
     try {
-      let quiz = await Quiz.find(id);
+      let quiz = await Quiz.findOrFail(id);
 
       let data = await quiz.attempts();
 
       return res.status(200).send(data);
     } catch (error) {
-      console.log(error);
-      return res.status(400).send(error);
+      return res.status(400).send({ errors: error.message });
     }
   }
 
-  static async attemptQuiz(req, res) {
-    if (!(await can(req.user, ["sudo", "super-attempt", "create-attempt"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
+  static async leaderboard(req, res) {
+    if (!(await can(req.user, ["sudo", "super-quiz", "read-quiz"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
+
+    let id = parseInt(req.params.id);
+
+    try {
+      let quiz = await Quiz.findOrFail(id);
+
+      let data = await quiz.leaderboards();
+
+      return res.status(200).send(data);
+    } catch (error) {
+      return res.status(400).send({ errors: error.message });
+    }
+  }
+
+  static async attempt(req, res) {
+    if (!(await can(req.user, ["sudo", "super-attempt", "create-attempt"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
 
     try {
       let id = parseInt(req.params.id);
+      let user = req.user;
       let quiz = await Quiz.find(id);
+
+      let user_attempt = await Attempt.whereAll({
+        user_id: user.id,
+        quiz_id: quiz.id,
+      });
+
+      let ongoing_attempt = user_attempt.find(
+        (attempt) => attempt.finished_at === null
+      );
+
+      if (quiz.user_id === user.id)
+        return res.status(403).send({
+          errors:
+            "anda tidak bisa melakukan percobaan terhadap kuis yang anda buat",
+        });
+
+      if (user_attempt.lenght >= quiz.max_attempt)
+        return res.status(403).send({
+          errors: {
+            message: "anda telah mencapai batas maksimal percobaan kuis.",
+            max_attempt: quiz.max_attempt,
+          },
+        });
+
+      if (ongoing_attempt)
+        return res.status(403).send({
+          errors: "selesaikan percobaan anda terlebih dahulu",
+        });
 
       let payload = {
         quiz_id: quiz.id,
@@ -178,66 +278,7 @@ export default class QuizController {
 
       return res.status(201).send({ message: "attempt success" });
     } catch (error) {
-      console.log(error);
-      return res.status(400).send(error);
-    }
-  }
-
-  static async submitQuiz(req, res) {
-    if (!(await can(req.user, ["sudo", "super-response", "create-response"])))
-      throw new Error("anda tidak memiliki hak akses untuk endpoint ini");
-
-    try {
-      const id = parseInt(req.params.id);
-
-      const attempt = await Attempt.find(id);
-
-      const quiz = await attempt.quiz();
-
-      const questions = await quiz.questions();
-
-      const point = 100 / questions.length;
-
-      let score = 0;
-
-      let responses = req.body.responses;
-
-      for (const response of responses) {
-        let response_payload = {
-          attempt_id: attempt.id,
-          ...response,
-        };
-
-        let _response = await Response.whereFirst({
-          attempt_id: attempt.id,
-          question_id: response.question_id,
-        });
-
-        if (!_response) {
-          await Response.create(response_payload);
-        } else {
-          await _response.update(response_payload);
-        }
-      }
-
-      responses = await attempt.responses();
-
-      for (const response of responses) {
-        if (response.is_correct) {
-          score = score + point;
-        }
-      }
-
-      await attempt.update({
-        score: score,
-        time_remaining: "0",
-        finished_at: moment().utc().format("YYYY-MM-DD HH:mm:ss"),
-      });
-
-      return res.status(200).send({ message: "quiz submitted" });
-    } catch (error) {
-      console.log(error);
-      return res.status(400).send(error);
+      return res.status(400).send({ errors: error.message });
     }
   }
 }
