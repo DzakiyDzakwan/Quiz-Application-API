@@ -211,22 +211,12 @@ export default class Attempt {
   }
 
   async responses() {
-    // let query = `
-    //   SELECT questions.content as question, answers.content as answer, answers.is_correct as is_correct
-    //   FROM responses
-    //   JOIN questions ON questions.id = responses.question_id
-    //   JOIN answers ON answers.id = responses.answer_id
-    //   WHERE responses.attempt_id = ${this.id}
-    // `;
-
     try {
-      // let [results, fields] = await db.query(query);
+      let _responses = await Response.whereAll({ attempt_id: this.id });
 
-      let responses = await Response.whereAll({ attempt_id: this.id });
+      this._responses = _responses;
 
-      this._responses = this._responses;
-
-      return this._responses;
+      return _responses;
     } catch (error) {
       throw error;
     }
