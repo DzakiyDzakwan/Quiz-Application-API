@@ -1,4 +1,5 @@
 import can from "../../helpers/can.js";
+import Quiz from "../models/Quiz.js";
 import Room from "../models/Room.js";
 
 export default class RoomController {
@@ -217,6 +218,28 @@ export default class RoomController {
       return res.status(200).send(data);
     } catch (error) {
       console.log(error);
+      return res.status(400).send({ errors: error.message });
+    }
+  }
+
+  static async addQuiz(req, res) {
+    if (!(await can(req.user, ["sudo", "super-quiz", "create-quiz"]))) {
+      return res
+        .status(403)
+        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
+    }
+
+    let payload = {
+      user_id: req.user.id,
+      room_code: req.params.code,
+      ...req.body,
+    };
+
+    try {
+      let data = await Quiz.create(payload);
+
+      return res.status(201).send({ message: "create success", data });
+    } catch (error) {
       return res.status(400).send({ errors: error.message });
     }
   }

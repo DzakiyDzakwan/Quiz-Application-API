@@ -6,7 +6,7 @@ import isParticipant from "../app/middlewares/QuizParticipantMiddleware.js";
 const router = Router();
 
 router.use(auth);
-router.get("/:id", AttemptController.show);
+router.get("/:id", isParticipant, AttemptController.show);
 router.post("/:id/pause", isParticipant, AttemptController.pause);
 router.post("/:id/submit", isParticipant, AttemptController.submit);
 

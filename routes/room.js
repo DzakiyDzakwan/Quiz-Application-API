@@ -38,5 +38,6 @@ router.delete(
 );
 
 router.get("/:code/quizzes", RoomController.quizzes);
+router.post("/:code/add-quiz", isRoomMaster, RoomController.addQuiz);
 
 export default router;

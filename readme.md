@@ -173,18 +173,18 @@ Untuk lebih lengkap mengenai enpoints anda dapat melihat dokumentasi api melalu 
 
 ### Pengelolaan Kuis
 
-| No  | Deskripsi                                                                      | Endpoint                                                  | auth   |
-| :-- | :----------------------------------------------------------------------------- | :-------------------------------------------------------- | :----- |
-| 1   | Melihat seluruh kuis yang ada didalam sistem                                   | `http://localhost:3333/api/v1/quiz`                       | `true` |
-| 1   | Melihat seluruh kuis publik yang ada didalam sistem                            | `http://localhost:3333/api/v1/quiz/public`                | `true` |
-| 2   | Melihat detail kuis berdasarkan id kuis yang dipilih                           | `http://localhost:3333/api/v1/quiz/:quiz_id`              | `true` |
-| 3   | Menambahkan kuis baru                                                          | `http://localhost:3333/api/v1/quiz`                       | `true` |
-| 4   | Memperbarui data kuis berdasarkan id kuis yang dipilih                         | `http://localhost:3333/api/v1/quiz/:quiz_id/update`       | `true` |
-| 5   | Menghapus permanen kuis berdasarkan id kuis yang dipilih                       | `http://localhost:3333/api/v1/quiz/:quiz_id/delete`       | `true` |
-| 6   | Menambahkan pertanyaan Kuis                                                    | `http://localhost:3333/api/v1/quiz/:quiz_id/add-question` | `true` |
-| 7   | Melihat seluruh percobaan yang dilakukan kuis berdasarkan id kuis yang dipilih | `http://localhost:3333/api/v1/quiz/:quiz_id/attempts`     | `true` |
-| 8   | Melihat percobaan kuis akun yang login                                         | `http://localhost:3333/api/v1/quiz/:quiz_id/my-attempts`  | `true` |
-| 9   | Melihat Leaderboard kuis berdasarkan id kuis yang dipilih                      | `http://localhost:3333/api/v1/quiz/:quiz_id/leaderboard`  | `true` |
+| No  | Deskripsi                                                                      | Endpoint                                                  | auth    |
+| :-- | :----------------------------------------------------------------------------- | :-------------------------------------------------------- | :------ |
+| 1   | Melihat seluruh kuis yang ada didalam sistem                                   | `http://localhost:3333/api/v1/quiz`                       | `true`  |
+| 1   | Melihat seluruh kuis publik yang ada didalam sistem                            | `http://localhost:3333/api/v1/quiz/public`                | `false` |
+| 2   | Melihat detail kuis berdasarkan id kuis yang dipilih                           | `http://localhost:3333/api/v1/quiz/:quiz_id`              | `true`  |
+| 3   | Menambahkan kuis baru                                                          | `http://localhost:3333/api/v1/quiz`                       | `true`  |
+| 4   | Memperbarui data kuis berdasarkan id kuis yang dipilih                         | `http://localhost:3333/api/v1/quiz/:quiz_id/update`       | `true`  |
+| 5   | Menghapus permanen kuis berdasarkan id kuis yang dipilih                       | `http://localhost:3333/api/v1/quiz/:quiz_id/delete`       | `true`  |
+| 6   | Menambahkan pertanyaan Kuis                                                    | `http://localhost:3333/api/v1/quiz/:quiz_id/add-question` | `true`  |
+| 7   | Melihat seluruh percobaan yang dilakukan kuis berdasarkan id kuis yang dipilih | `http://localhost:3333/api/v1/quiz/:quiz_id/attempts`     | `true`  |
+| 8   | Melihat percobaan kuis akun yang login                                         | `http://localhost:3333/api/v1/quiz/:quiz_id/my-attempts`  | `true`  |
+| 9   | Melihat Leaderboard kuis berdasarkan id kuis yang dipilih                      | `http://localhost:3333/api/v1/quiz/:quiz_id/leaderboard`  | `true`  |
 
 ### Pengelolaan Pertanyaan Kuis
 

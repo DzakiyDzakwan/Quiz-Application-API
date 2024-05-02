@@ -25,12 +25,6 @@ export default class QuizController {
   }
 
   static async public(req, res) {
-    if (!(await can(req.user, ["sudo", "super-quiz", "read-quiz"]))) {
-      return res
-        .status(403)
-        .send({ errors: "anda tidak memiliki hak akses untuk endpoint ini" });
-    }
-
     try {
       let data = await Quiz.whereAll({ room_code: "null" });
 

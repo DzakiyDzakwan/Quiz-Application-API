@@ -8,9 +8,10 @@ import validate from "../app/validators/validate.js";
 
 const router = Router();
 
+router.get(/public/, QuizController.public);
+
 router.use(auth);
 router.get("/", admin, QuizController.index);
-router.get(/public/, QuizController.public);
 router.get("/:id", QuizController.show);
 
 router.post("/", store(), validate, QuizController.store);
