@@ -27,11 +27,11 @@ Project ini dikembangkan menggunakan [ExpressJS](https://expressjs.com/) sebagai
    cd backend_project_DzakiyDzakwan
    ```
 
-3. Export Database dari folder
+3. Export Database dari folder berikut
 
-```
-/databases/sanber-backend-project.sql
-```
+   ```
+   /databases/sanber-backend-project.sql
+   ```
 
 4. Kemudian install package
 
@@ -113,13 +113,13 @@ Project ini dikembangkan menggunakan [ExpressJS](https://expressjs.com/) sebagai
 
 ## Pengelolaan Hak Akses
 
-| No  | Deskripsi                                                          | Endpoint                                                        | auth                                      |
-| :-- | :----------------------------------------------------------------- | :-------------------------------------------------------------- | :---------------------------------------- |
-| 1   | Melihat seluruh hak akses yang ada didalam sistem                  | `http://localhost:3333/api/v1/permission`                       | `true`                                    |
-| 2   | Melihat detail hak akses berdasarkan id hak akses yang dipilih     | `http://localhost:3333/api/v1/permission/:permission_id`        | `true`                                    |
-| 3   | Menambahkan hak akses baru                                         | ``                                                              | `http://localhost:3333/api/v1/permission` |
-| 4   | Memperbarui data hak akses berdasarkan id hak akses yang dipilih   | `http://localhost:3333/api/v1/permission/:permission_id/update` | `true`                                    |
-| 5   | Menghapus permanen hak akses berdasarkan id hak akses yang dipilih | `http://localhost:3333/api/v1/permission/:permission_id/delete` | `true`                                    |
+| No  | Deskripsi                                                          | Endpoint                                                        | auth   |
+| :-- | :----------------------------------------------------------------- | :-------------------------------------------------------------- | :----- |
+| 1   | Melihat seluruh hak akses yang ada didalam sistem                  | `http://localhost:3333/api/v1/permission`                       | `true` |
+| 2   | Melihat detail hak akses berdasarkan id hak akses yang dipilih     | `http://localhost:3333/api/v1/permission/:permission_id`        | `true` |
+| 3   | Menambahkan hak akses baru                                         | `http://localhost:3333/api/v1/permission`                       | `true` |
+| 4   | Memperbarui data hak akses berdasarkan id hak akses yang dipilih   | `http://localhost:3333/api/v1/permission/:permission_id/update` | `true` |
+| 5   | Menghapus permanen hak akses berdasarkan id hak akses yang dipilih | `http://localhost:3333/api/v1/permission/:permission_id/delete` | `true` |
 
 ## Pengelolaan Ruangan
 
@@ -178,6 +178,33 @@ Project ini dikembangkan menggunakan [ExpressJS](https://expressjs.com/) sebagai
 | 2   | Mulai mengerjakan kuis                                              | `http://localhost:3333/api/v1/quiz/:quiz_id/attempt`      | `true` |
 | 3   | Berhenti sementara mengerjakan kuis                                 | `http://localhost:3333/api/v1/attempt/:attempt_id/pause`  | `true` |
 | 4   | Selesai mengerjakan kuis                                            | `http://localhost:3333/api/v1/attempt/:attempt_id/submit` | `true` |
+
+## Dummy User
+
+Berikut adalah list username dummy beserta password yang sudah disediakan :
+
+1. Super Admin
+
+```
+username: "supertesting",
+password: "super12345",
+```
+
+2. Admin
+
+```
+username: "admintesting",
+password: "admin12345",
+```
+
+3. User
+
+```
+username: "usertesting01",
+password: "usertest0112345",
+```
+
+Anda dapat melihat lebih lengkap credential dummy user di `/databases/seeders/UserSeeder.js`
 
 # Contact Me
 
