@@ -66,8 +66,6 @@ Project ini dikembangkan menggunakan [ExpressJS](https://expressjs.com/) sebagai
 
 # Features
 
-Untuk lebih lengkap mengenai
-
 ## Dummy User
 
 Berikut adalah list username dummy beserta password yang sudah disediakan :
@@ -97,7 +95,7 @@ Anda dapat melihat lebih lengkap credential dummy user di `/databases/seeders/Us
 
 ## Endpoints
 
-Untuk lebih lengkap anda dapat melihat dokumentasi api melalu [Quiz Application API](https://documenter.getpostman.com/view/33949680/2sA3JFB4Wf)
+Untuk lebih lengkap mengenai enpoints anda dapat melihat dokumentasi api melalu [Quiz Application API](https://documenter.getpostman.com/view/33949680/2sA3JFB4Wf)
 
 ### Autentikasi
 
