@@ -240,6 +240,28 @@ export default class QuizController {
       let user = req.user;
       let quiz = await Quiz.find(id);
 
+      let room = await quiz.room();
+
+      if (quiz.user_id === user.id)
+        return res.status(403).send({
+          errors:
+            "anda tidak bisa melakukan percobaan terhadap kuis yang anda buat",
+        });
+
+      if (room) {
+        let room_participants = await room.participants();
+
+        let is_participant = room_participants.find(
+          (participant) => participant.id === user.id
+        );
+
+        if (!is_participant)
+          return res.status(403).send({
+            errors:
+              "anda tidak bisa melakukan pecobaan terhadap kuis, anda bukan bagian dari peserta kuis",
+          });
+      }
+
       let user_attempt = await Attempt.whereAll({
         user_id: user.id,
         quiz_id: quiz.id,
@@ -248,12 +270,6 @@ export default class QuizController {
       let ongoing_attempt = user_attempt.find(
         (attempt) => attempt.finished_at === null
       );
-
-      if (quiz.user_id === user.id)
-        return res.status(403).send({
-          errors:
-            "anda tidak bisa melakukan percobaan terhadap kuis yang anda buat",
-        });
 
       if (user_attempt.lenght >= quiz.max_attempt)
         return res.status(403).send({

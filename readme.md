@@ -27,7 +27,11 @@ Project ini dikembangkan menggunakan [ExpressJS](https://expressjs.com/) sebagai
    cd backend_project_DzakiyDzakwan
    ```
 
-3. Export Database dari folder `/databases/sanber-backend-project.sql`
+3. Export Database dari folder
+
+```
+/databases/sanber-backend-project.sql
+```
 
 4. Kemudian install package
 
@@ -46,7 +50,13 @@ Project ini dikembangkan menggunakan [ExpressJS](https://expressjs.com/) sebagai
 6. Kemudian seed data dummy menggunakan perintah
 
    ```bash
-   node seed
+   node seed run
+   ```
+
+   Jika ingin menghapus seluruh data yang ada didatabase gunakan command
+
+   ```bash
+      node seed truncate
    ```
 
 7. Jalankan server api
