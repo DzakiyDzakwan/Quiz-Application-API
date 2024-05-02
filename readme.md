@@ -65,110 +65,109 @@ Project ini dikembangkan menggunakan [ExpressJS](https://expressjs.com/) sebagai
 
 ## Pengelolaan Profile
 
-| No  | Deskripsi                                                      | Endpoint | auth    |
-| :-- | :------------------------------------------------------------- | :------- | :------ |
-| 1   | Melihat profil akun yang login                                 | ``       | `false` |
-| 2   | Memperbarui profil akun yang login                             | ``       | `false` |
-| 3   | Melihat ruangan yang dimiliki akun yang login                  | ``       | `false` |
-| 4   | Melihat kuis yang dibuat akun yang login                       | ``       | `false` |
-| 5   | Melihat percobaan kuis yang sudah diselesaikan akun yang login | ``       | `false` |
-| 6   | Menonaktifkan akun yang login                                  | ``       | `false` |
+| No  | Deskripsi                                                      | Endpoint                                       | auth   |
+| :-- | :------------------------------------------------------------- | :--------------------------------------------- | :----- |
+| 1   | Melihat profil akun yang login                                 | `http://localhost:3333/api/v1/profile`         | `true` |
+| 2   | Memperbarui profil akun yang login                             | `http://localhost:3333/api/v1/profile/update`  | `true` |
+| 3   | Melihat ruangan yang dimiliki akun yang login                  | `http://localhost:3333/api/v1/profile/rooms`   | `true` |
+| 4   | Melihat kuis yang dibuat akun yang login                       | `http://localhost:3333/api/v1/profile/quizzes` | `true` |
+| 5   | Melihat percobaan kuis yang sudah diselesaikan akun yang login | `http://localhost:3333/api/v1/profile/history` | `true` |
 
 ## Pengelolaan User
 
-| No  | Deskripsi                                                | Endpoint | auth    |
-| :-- | :------------------------------------------------------- | :------- | :------ |
-| 1   | Melihat seluruh user aktif yang ada didalam sistem       | ``       | `false` |
-| 2   | Melihat seluruh user inaktif yang ada didalam sistem     | ``       | `false` |
-| 3   | Melihat detail user berdasarkan id user yang dipilih     | ``       | `false` |
-| 4   | Menambahkan user baru                                    | ``       | `false` |
-| 5   | Memperbarui data user berdasarkan id user yang dipilih   | ``       | `false` |
-| 6   | Menonaktifkan user berdasarkan id user yang dipilih      | ``       | `false` |
-| 7   | Menghapus permanen user berdasarkan id user yang dipilih | ``       | `false` |
-| 8   | Menambahkan role user                                    | ``       | `false` |
-| 9   | Menghapus role user                                      | ``       | `false` |
-| 10  | Menambahkan hak akses user                               | ``       | `false` |
-| 11  | Menghapus hak akses user                                 | ``       | `false` |
+| No  | Deskripsi                                                | Endpoint                                                        | auth   |
+| :-- | :------------------------------------------------------- | :-------------------------------------------------------------- | :----- |
+| 1   | Melihat seluruh user aktif yang ada didalam sistem       | `http://localhost:3333/api/v1/user`                             | `true` |
+| 2   | Melihat seluruh user inaktif yang ada didalam sistem     | `http://localhost:3333/api/v1/user/inactive`                    | `true` |
+| 3   | Melihat detail user berdasarkan id user yang dipilih     | `http://localhost:3333/api/v1/user/:user_id`                    | `true` |
+| 4   | Menambahkan user baru                                    | `http://localhost:3333/api/v1/user`                             | `true` |
+| 5   | Memperbarui data user berdasarkan id user yang dipilih   | `http://localhost:3333/api/v1/user/:user_id/update`             | `true` |
+| 6   | Menonaktifkan user berdasarkan id user yang dipilih      | `http://localhost:3333/api/v1/user/:user_id/delete`             | `true` |
+| 7   | Menghapus permanen user berdasarkan id user yang dipilih | `http://localhost:3333/api/v1/user/:user_id/destroy`            | `true` |
+| 8   | Menambahkan role user                                    | `http://localhost:3333/api/v1/user/:user_id/attach-roles`       | `true` |
+| 9   | Menghapus role user                                      | `http://localhost:3333/api/v1/user/:user_id/detach-roles`       | `true` |
+| 10  | Menambahkan hak akses user                               | `http://localhost:3333/api/v1/user/:user_id/attach-permissions` | `true` |
+| 11  | Menghapus hak akses user                                 | `http://localhost:3333/api/v1/user/:id/detach-permissions`      | `true` |
 
 ## Pengelolaan Role
 
-| No  | Deskripsi                                                | Endpoint | auth    |
-| :-- | :------------------------------------------------------- | :------- | :------ |
-| 1   | Melihat seluruh role yang ada didalam sistem             | ``       | `false` |
-| 2   | Melihat detail role berdasarkan id role yang dipilih     | ``       | `false` |
-| 3   | Menambahkan role baru                                    | ``       | `false` |
-| 4   | Memperbarui data role berdasarkan id role yang dipilih   | ``       | `false` |
-| 5   | Menghapus permanen role berdasarkan id role yang dipilih | ``       | `false` |
-| 6   | Menambahkan hak akses role                               | ``       | `false` |
-| 7   | Menghapus hak akses role                                 | ``       | `false` |
+| No  | Deskripsi                                                | Endpoint                                                        | auth   |
+| :-- | :------------------------------------------------------- | :-------------------------------------------------------------- | :----- |
+| 1   | Melihat seluruh role yang ada didalam sistem             | `http://localhost:3333/api/v1/role`                             | `true` |
+| 2   | Melihat detail role berdasarkan id role yang dipilih     | `http://localhost:3333/api/v1/role/:role_id`                    | `true` |
+| 3   | Menambahkan role baru                                    | `http://localhost:3333/api/v1/role`                             | `true` |
+| 4   | Memperbarui data role berdasarkan id role yang dipilih   | `http://localhost:3333/api/v1/role/:role_id/update`             | `true` |
+| 5   | Menghapus permanen role berdasarkan id role yang dipilih | `http://localhost:3333/api/v1/role/:role_id/delete`             | `true` |
+| 6   | Menambahkan hak akses role                               | `http://localhost:3333/api/v1/role/:role_id/attach-permissions` | `true` |
+| 7   | Menghapus hak akses role                                 | `http://localhost:3333/api/v1/role/:role_id/detach-permissions` | `true` |
 
 ## Pengelolaan Hak Akses
 
-| No  | Deskripsi                                                          | Endpoint | auth    |
-| :-- | :----------------------------------------------------------------- | :------- | :------ |
-| 1   | Melihat seluruh hak akses yang ada didalam sistem                  | ``       | `false` |
-| 2   | Melihat detail hak akses berdasarkan id hak akses yang dipilih     | ``       | `false` |
-| 3   | Menambahkan hak akses baru                                         | ``       | `false` |
-| 4   | Memperbarui data hak akses berdasarkan id hak akses yang dipilih   | ``       | `false` |
-| 5   | Menghapus permanen hak akses berdasarkan id hak akses yang dipilih | ``       | `false` |
+| No  | Deskripsi                                                          | Endpoint                                                        | auth                                      |
+| :-- | :----------------------------------------------------------------- | :-------------------------------------------------------------- | :---------------------------------------- |
+| 1   | Melihat seluruh hak akses yang ada didalam sistem                  | `http://localhost:3333/api/v1/permission`                       | `true`                                    |
+| 2   | Melihat detail hak akses berdasarkan id hak akses yang dipilih     | `http://localhost:3333/api/v1/permission/:permission_id`        | `true`                                    |
+| 3   | Menambahkan hak akses baru                                         | ``                                                              | `http://localhost:3333/api/v1/permission` |
+| 4   | Memperbarui data hak akses berdasarkan id hak akses yang dipilih   | `http://localhost:3333/api/v1/permission/:permission_id/update` | `true`                                    |
+| 5   | Menghapus permanen hak akses berdasarkan id hak akses yang dipilih | `http://localhost:3333/api/v1/permission/:permission_id/delete` | `true`                                    |
 
 ## Pengelolaan Ruangan
 
-| No  | Deskripsi                                                                               | Endpoint | auth    |
-| :-- | :-------------------------------------------------------------------------------------- | :------- | :------ |
-| 1   | Melihat seluruh ruangan yang ada didalam sistem                                         | ``       | `false` |
-| 2   | Melihat detail ruangan berdasarkan kode ruangan yang dipilih                            | ``       | `false` |
-| 3   | Menambahkan ruangan baru                                                                | ``       | `false` |
-| 4   | Memperbarui data ruangan berdasarkan kode ruangan yang dipilih                          | ``       | `false` |
-| 5   | Menghapus permanen ruangan berdasarkan kode ruangan yang dipilih                        | ``       | `false` |
-| 6   | Melihat seluruh kuis yang ada ada didalam ruangan berdasarkan kode ruangan yang dipilih | ``       | `false` |
+| No  | Deskripsi                                                                               | Endpoint                                               | auth   |
+| :-- | :-------------------------------------------------------------------------------------- | :----------------------------------------------------- | :----- |
+| 1   | Melihat seluruh ruangan yang ada didalam sistem                                         | `http://localhost:3333/api/v1/room`                    | `true` |
+| 2   | Melihat detail ruangan berdasarkan kode ruangan yang dipilih                            | `http://localhost:3333/api/v1/room/:room_code`         | `true` |
+| 3   | Menambahkan ruangan baru                                                                | `http://localhost:3333/api/v1/room`                    | `true` |
+| 4   | Memperbarui data ruangan berdasarkan kode ruangan yang dipilih                          | `http://localhost:3333/api/v1/room/:room_code/update`  | `true` |
+| 5   | Menghapus permanen ruangan berdasarkan kode ruangan yang dipilih                        | `http://localhost:3333/api/v1/room/:room_code/delete`  | `true` |
+| 6   | Melihat seluruh kuis yang ada ada didalam ruangan berdasarkan kode ruangan yang dipilih | `http://localhost:3333/api/v1/room/:room_code/quizzes` | `true` |
 
 ## Pengelolaan Peserta Ruangan
 
-| No  | Deskripsi                                                        | Endpoint | auth    |
-| :-- | :--------------------------------------------------------------- | :------- | :------ |
-| 1   | Bergabung dengan ruangan berdasarkan kode ruangan yang dimasukan | ``       | `false` |
-| 2   | Keluar ruangan berdasarkan kode ruangan yang dipilih             | ``       | `false` |
-| 3   | Keluar ruangan berdasarkan kode ruangan yang dipilih             | ``       | `false` |
+| No  | Deskripsi                                                        | Endpoint                                                          | auth   |
+| :-- | :--------------------------------------------------------------- | :---------------------------------------------------------------- | :----- |
+| 1   | Bergabung dengan ruangan berdasarkan kode ruangan yang dimasukan | `http://localhost:3333/api/v1/room/join`                          | `true` |
+| 2   | Keluar ruangan berdasarkan kode ruangan yang dipilih             | `http://localhost:3333/api/v1/room/:room_code/quit`               | `true` |
+| 3   | Keluar ruangan berdasarkan kode ruangan yang dipilih             | `http://localhost:3333/api/v1/room/:room_code/remove-participant` | `true` |
 
 ## Pengelolaan Kuis
 
-| No  | Deskripsi                                                                      | Endpoint | auth    |
-| :-- | :----------------------------------------------------------------------------- | :------- | :------ |
-| 1   | Melihat seluruh kuis yang ada didalam sistem                                   | ``       | `false` |
-| 1   | Melihat seluruh kuis publik yang ada didalam sistem                            | ``       | `false` |
-| 2   | Melihat detail kuis berdasarkan id kuis yang dipilih                           | ``       | `false` |
-| 3   | Menambahkan kuis baru                                                          | ``       | `false` |
-| 4   | Memperbarui data kuis berdasarkan id kuis yang dipilih                         | ``       | `false` |
-| 5   | Menghapus permanen kuis berdasarkan id kuis yang dipilih                       | ``       | `false` |
-| 6   | Menambahkan pertanyaan Kuis                                                    | ``       | `false` |
-| 7   | Melihat seluruh percobaan yang dilakukan kuis berdasarkan id kuis yang dipilih | ``       | `false` |
-| 8   | Melihat percobaan kuis akun yang login                                         | ``       | `false` |
-| 9   | Melihat Leaderboard kuis berdasarkan id kuis yang dipilih                      | ``       | `false` |
+| No  | Deskripsi                                                                      | Endpoint                                                  | auth   |
+| :-- | :----------------------------------------------------------------------------- | :-------------------------------------------------------- | :----- |
+| 1   | Melihat seluruh kuis yang ada didalam sistem                                   | `http://localhost:3333/api/v1/quiz`                       | `true` |
+| 1   | Melihat seluruh kuis publik yang ada didalam sistem                            | `http://localhost:3333/api/v1/quiz/public`                | `true` |
+| 2   | Melihat detail kuis berdasarkan id kuis yang dipilih                           | `http://localhost:3333/api/v1/quiz/:quiz_id`              | `true` |
+| 3   | Menambahkan kuis baru                                                          | `http://localhost:3333/api/v1/quiz`                       | `true` |
+| 4   | Memperbarui data kuis berdasarkan id kuis yang dipilih                         | `http://localhost:3333/api/v1/quiz/:quiz_id/update`       | `true` |
+| 5   | Menghapus permanen kuis berdasarkan id kuis yang dipilih                       | `http://localhost:3333/api/v1/quiz/:quiz_id/delete`       | `true` |
+| 6   | Menambahkan pertanyaan Kuis                                                    | `http://localhost:3333/api/v1/quiz/:quiz_id/add-question` | `true` |
+| 7   | Melihat seluruh percobaan yang dilakukan kuis berdasarkan id kuis yang dipilih | `http://localhost:3333/api/v1/quiz/:quiz_id/attempts`     | `true` |
+| 8   | Melihat percobaan kuis akun yang login                                         | `http://localhost:3333/api/v1/quiz/:quiz_id/my-attempts`  | `true` |
+| 9   | Melihat Leaderboard kuis berdasarkan id kuis yang dipilih                      | `http://localhost:3333/api/v1/quiz/:quiz_id/leaderboard`  | `true` |
 
 ## Pengelolaan Pertanyaan Kuis
 
-| No  | Deskripsi                                                               | Endpoint | auth    |
-| :-- | :---------------------------------------------------------------------- | :------- | :------ |
-| 1   | Memperbarui data pertanyaan berdasarkan id pertanyaan yang dipilih      | ``       | `false` |
-| 2   | Menghapus pertanyaan kuis berdasarka id pertanyaan yang dipilih         | ``       | `false` |
-| 3   | Menambah jawaban pertanyaan kuis berdasarkan id pertanyaan yang dipilih | ``       | `false` |
+| No  | Deskripsi                                                                  | Endpoint                                                        | auth   |
+| :-- | :------------------------------------------------------------------------- | :-------------------------------------------------------------- | :----- |
+| 1   | Memperbarui data pertanyaan berdasarkan id pertanyaan yang dipilih         | `http://localhost:3333/api/v1/question/:question_id/update`     | `true` |
+| 2   | Menghapus sementara pertanyaan kuis berdasarkan id pertanyaan yang dipilih | `http://localhost:3333/api/v1/question/:id/soft-delete`         | `true` |
+| 3   | Menambah jawaban pertanyaan kuis berdasarkan id pertanyaan yang dipilih    | `http://localhost:3333/api/v1/question/:question_id/add-answer` | `true` |
 
 ## Pengelolaan Jawaban Pertanyaan Kuis
 
-| No  | Deskripsi                                                                          | Endpoint | auth    |
-| :-- | :--------------------------------------------------------------------------------- | :------- | :------ |
-| 1   | Memperbarui data jawaban pertanyaan berdasarkan id jawaban pertanyaan yang dipilih | ``       | `false` |
-| 2   | Menghapus jawaban pertanyaan kuis                                                  | ``       | `false` |
+| No  | Deskripsi                                                                          | Endpoint                                                     | auth   |
+| :-- | :--------------------------------------------------------------------------------- | :----------------------------------------------------------- | :----- |
+| 1   | Memperbarui data jawaban pertanyaan berdasarkan id jawaban pertanyaan yang dipilih | `http://localhost:3333/api/v1/answer/:answer_id/update`      | `true` |
+| 2   | Menghapus sementara jawaban pertanyaan kuis                                        | `http://localhost:3333/api/v1/answer/:answer_id/soft-delete` | `true` |
 
 ## Pengelolaan Percobaan Kuis
 
-| No  | Deskripsi                                                           | Endpoint | auth    |
-| :-- | :------------------------------------------------------------------ | :------- | :------ |
-| 1   | Melihat detail percobaan kuis berdasarkan id percobaan yang dipilih | ``       | `false` |
-| 2   | Mulai mengerjakan kuis                                              | ``       | `false` |
-| 3   | Berhenti sementara mengerjakan kuis                                 | ``       | `false` |
-| 4   | Selesai mengerjakan kuis                                            | ``       | `false` |
+| No  | Deskripsi                                                           | Endpoint                                                  | auth   |
+| :-- | :------------------------------------------------------------------ | :-------------------------------------------------------- | :----- |
+| 1   | Melihat detail percobaan kuis berdasarkan id percobaan yang dipilih | `http://localhost:3333/api/v1/attempt/:attempt_id`        | `true` |
+| 2   | Mulai mengerjakan kuis                                              | `http://localhost:3333/api/v1/quiz/:quiz_id/attempt`      | `true` |
+| 3   | Berhenti sementara mengerjakan kuis                                 | `http://localhost:3333/api/v1/attempt/:attempt_id/pause`  | `true` |
+| 4   | Selesai mengerjakan kuis                                            | `http://localhost:3333/api/v1/attempt/:attempt_id/submit` | `true` |
 
 # Contact Me
 
