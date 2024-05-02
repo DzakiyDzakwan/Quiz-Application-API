@@ -15,8 +15,8 @@ const router = Router();
 router.use(auth);
 
 router.get("/", RoomController.index);
-router.get("/:code", store(), validate, RoomController.show);
-router.post("/", RoomController.store);
+router.get("/:code", RoomController.show);
+router.post("/", store(), validate, RoomController.store);
 router.put(
   "/:code/update",
   isRoomMaster,

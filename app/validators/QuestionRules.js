@@ -31,10 +31,8 @@ const addAnswer = () => {
     body("is_correct").custom(async (value, { req }) => {
       let id = req.params.id;
       let question = await Question.findOrFail(id);
-      let answers = await question.answers();
 
-      if (answers.length >= 4)
-        throw new Error("jumlah jawaban tidak boleh lebih dari 4");
+      let answers = await question.answers();
 
       let true_exist = answers.find((answer) => answer.is_correct === value);
       if (true_exist) throw new Error("hanya boleh satu jawaban yang benar");

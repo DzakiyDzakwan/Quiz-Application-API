@@ -15,7 +15,7 @@ router.post(
   QuestionController.addAnswer
 );
 router.put("/:id/update", update(), validate, QuestionController.update);
-router.delete("/:id/soft-delete", QuestionController.softDestroy);
-router.delete("/:id/delete", QuestionController.destroy);
+router.delete("/:id/delete", QuestionController.softDestroy);
+router.delete("/:id/destroy", QuestionController.destroy);
 
 export default router;

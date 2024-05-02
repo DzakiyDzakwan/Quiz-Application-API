@@ -98,8 +98,8 @@ export default class UserSeeder {
       },
       {
         fullname: "User Testing 10",
-        username: "usertesting010",
-        email: "usertesting010@gmail.com",
+        username: "usertesting10",
+        email: "usertesting10@gmail.com",
         password: "usertest01012345",
         roles: ["user"],
         permissions: [],

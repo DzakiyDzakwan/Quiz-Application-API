@@ -51,9 +51,26 @@ export default class QuizController {
       let id = parseInt(req.params.id);
       let data = await Quiz.findOrFail(id);
 
-      await data.creator();
-      await data.room();
-      await data.questions();
+      let creator = await data.creator();
+      let room = await data.room();
+      let question = await data.questions();
+
+      let user = req.user.id;
+
+      if (room) {
+        let room_participants = await room.participants();
+
+        let is_participant = room_participants.find(
+          (participant) => participant.id === user.id
+        );
+
+        let is_creator = creator.id === user.id;
+
+        if (!is_participant && !is_creator)
+          return res.status(403).send({
+            errors: "kuis ini tidak terbuka untuk umum",
+          });
+      }
 
       return res.status(200).send(data);
     } catch (error) {

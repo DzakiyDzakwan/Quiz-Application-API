@@ -6,7 +6,6 @@ const update = () => {
     body("is_correct")
       .optional()
       .custom(async (value, { req }) => {
-        console.log(value);
         return true;
       }),
   ];

@@ -143,7 +143,7 @@ export default class UserController {
       let data = await user.delete();
 
       return res
-        .status(204)
+        .status(200)
         .send({ message: "berhasil menghapus permanen user" });
     } catch (error) {
       return res.status(400).send({ errors: error.message });
@@ -203,7 +203,6 @@ export default class UserController {
 
       let data = await user.detachRoles(req.body.roles);
 
-      console.log(user);
       return res.status(200).send({ message: "berhasil melepas role user" });
     } catch (error) {
       return res.status(400).send({ errors: error.message });

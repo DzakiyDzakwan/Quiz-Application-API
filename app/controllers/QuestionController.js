@@ -117,6 +117,16 @@ export default class QuestionController {
     try {
       let id = parseInt(req.params.id);
 
+      let question = await Question.findOrFail(id);
+
+      let answers = await question.answers();
+
+      if (answers.length >= 4)
+        return res.status(403).send({
+          errors:
+            "jumlah jawaban untuk pertanyaan ini sudah mencapai batas maksimal",
+        });
+
       let payload = {
         question_id: id,
         content: req.body.content,

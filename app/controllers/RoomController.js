@@ -167,8 +167,14 @@ export default class RoomController {
 
       let user = req.user;
 
+      let participants = await room.participants();
+
+      let is_participant = participants.find(
+        (participant) => participant.id === req.body.user_id
+      );
+
       //   Get user_id from header
-      let data = room.removeParticipant(user.id);
+      let data = room.removeParticipant(req.body.user_id);
 
       return res.status(200).send({ message: "berhasil keluar ruangan" });
     } catch (error) {

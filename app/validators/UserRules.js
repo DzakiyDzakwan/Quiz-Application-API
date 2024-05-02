@@ -40,10 +40,9 @@ const store = () => {
 
 const update = () => {
   return [
-    body("fullname").notEmpty().withMessage("fullname tidak boleh kosong"),
+    body("fullname").optional(),
     body("username")
-      .notEmpty()
-      .withMessage("username tidak boleh kosong")
+      .optional()
       .custom(async (value) => {
         const user = await User.whereFirst({
           username: value,

@@ -247,8 +247,6 @@ export default class Quiz {
     try {
       let [results, fields] = await db.query(query);
 
-      console.log(results);
-
       this._attempts = results;
 
       return results;

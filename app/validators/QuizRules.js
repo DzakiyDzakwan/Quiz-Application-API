@@ -1,28 +1,34 @@
 import { body } from "express-validator";
 import Question from "../models/Question.js";
 import Answer from "../models/Answer.js";
+import Room from "../models/Room.js";
 
 const store = () => {
   return [
+    body("room_code")
+      .optional()
+      .custom(async (value) => {
+        if (value) {
+          let room = await Room.findOrFail(value);
+        }
+        return true;
+      }),
     body("title").notEmpty().withMessage("title tidak boleh kosong"),
     body("time")
       .optional()
-      .isInt()
-      .withMessage("time harus berupa angka")
       .custom((value) => {
-        let time_list = ["30", "60", "90", "120", "150", "180"];
+        if (value) {
+          let time_list = [30, 60, 90, 120, 150, 180];
 
-        if (!time_list.includes(value))
-          throw new Error(
-            "time yang diperbolehkan 30 menit, 60 menit, 90 menit, 120 menit, 150 menit dan 180 menit"
-          );
+          if (!time_list.includes(value))
+            throw new Error(
+              "time yang diperbolehkan 30 menit, 60 menit, 90 menit, 120 menit, 150 menit dan 180 menit"
+            );
+        }
 
         return true;
       }),
-    body("max_attempt")
-      .optional()
-      .isInt()
-      .withMessage("max_attempt harus berupa angka"),
+    body("max_attempt").optional(),
   ];
 };
 
@@ -30,22 +36,18 @@ const update = () => {
   return [
     body("time")
       .optional()
-      .isInt()
-      .withMessage("time harus berupa angka")
       .custom((value) => {
-        let time_list = ["30", "60", "90", "120", "150", "180"];
+        if (value) {
+          let time_list = [30, 60, 90, 120, 150, 180];
 
-        if (!time_list.includes(value))
-          throw new Error(
-            "time yang diperbolehkan 30 menit, 60 menit, 90 menit, 120 menit, 150 menit dan 180 menit"
-          );
-
+          if (!time_list.includes(value))
+            throw new Error(
+              "time yang diperbolehkan 30 menit, 60 menit, 90 menit, 120 menit, 150 menit dan 180 menit"
+            );
+        }
         return true;
       }),
-    body("max_attempt")
-      .optional()
-      .isInt()
-      .withMessage("max_attempt harus berupa angka"),
+    body("max_attempt").optional(),
   ];
 };
 
@@ -80,7 +82,7 @@ const addQuestion = () => {
 
         let correct_answer = answers.find((answer) => answer.is_correct);
 
-        if (correct_answer.length > 1)
+        if (correct_answer)
           throw new Error("hanya boleh satu jawaban yang benar");
 
         return true;

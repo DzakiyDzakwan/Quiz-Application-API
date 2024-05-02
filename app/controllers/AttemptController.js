@@ -112,9 +112,9 @@ export default class AttemptController {
         if (!check_question)
           return res
             .status(400)
-            .send({ errors: "pertanyaan tidak dapat ditemukan" });
+            .send({ errors: "pertanyaan dan quiz tidak cocok" });
 
-        let check_answer = Answer.whereFirst({
+        let check_answer = await Answer.whereFirst({
           id: response.answer_id,
           question_id: response.question_id,
           deleted_at: "null",
@@ -123,7 +123,7 @@ export default class AttemptController {
         if (!check_answer)
           return res
             .status(400)
-            .send({ errors: "jawaban tidak dapat ditemukan" });
+            .send({ errors: "jawaban dan soal tidak cocok" });
 
         let response_payload = {
           attempt_id: attempt.id,
