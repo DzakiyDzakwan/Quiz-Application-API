@@ -2,6 +2,7 @@ import { Router } from "express";
 import RoomController from "../app/controllers/RoomController.js";
 import auth from "../app/middlewares/AuthMiddleware.js";
 import isRoomMaster from "../app/middlewares/RoomMasterMiddleware.js";
+import admin from "../app/middlewares/AdminMiddleware.js";
 import validate from "../app/validators/validate.js";
 import {
   store,
@@ -14,7 +15,7 @@ const router = Router();
 
 router.use(auth);
 
-router.get("/", RoomController.index);
+router.get("/", admin, RoomController.index);
 router.get("/:code", RoomController.show);
 router.post("/", store(), validate, RoomController.store);
 router.put(

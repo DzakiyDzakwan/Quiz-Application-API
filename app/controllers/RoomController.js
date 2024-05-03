@@ -30,9 +30,21 @@ export default class RoomController {
     try {
       let data = await Room.findOrFail(req.params.code);
 
-      await data.master();
-      await data.participants();
+      let user = req.user;
+      let master = await data.master();
+      let participants = await data.participants();
       await data.quizzes();
+
+      let is_master = master.id === user.id;
+      let is_participant = participants.find(
+        (participant) => participant.id === user.id
+      );
+      let is_admin = await user.hasRoles(["super", "admin"]);
+
+      if (!is_master && !is_participant && !is_admin)
+        return res.status(500).send({
+          errors: "anda tidak memiliki hak akses terhadap ruangan ini",
+        });
 
       return res.status(200).send(data);
     } catch (error) {
@@ -112,6 +124,21 @@ export default class RoomController {
       let room = await Room.findOrFail(req.params.code);
 
       let data = await room.participants();
+
+      let user = req.user;
+      let master = await data.master();
+
+      let is_master = master.id === user.id;
+      let is_participant = data.find(
+        (participant) => participant.id === user.id
+      );
+
+      let is_admin = await user.hasRoles(["super", "admin"]);
+
+      if (!is_master && !is_participant && !is_admin)
+        return res.status(500).send({
+          errors: "anda tidak memiliki hak akses terhadap ruangan ini",
+        });
 
       return res.status(200).send(data);
     } catch (error) {
@@ -214,6 +241,21 @@ export default class RoomController {
       let room = await Room.findOrFail(req.params.code);
 
       let data = await room.quizzes();
+
+      let user = req.user;
+      let master = await data.master();
+      let participants = await data.participants();
+
+      let is_master = master.id === user.id;
+      let is_participant = participants.find(
+        (participant) => participant.id === user.id
+      );
+      let is_admin = await user.hasRoles(["super", "admin"]);
+
+      if (!is_master && !is_participant && !is_admin)
+        return res.status(500).send({
+          errors: "anda tidak memiliki hak akses terhadap ruangan ini",
+        });
 
       return res.status(200).send(data);
     } catch (error) {
